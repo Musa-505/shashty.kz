@@ -95,7 +95,17 @@ export function GenealogyChart() {
             target: child.id,
             markerEnd: { type: MarkerType.ArrowClosed },
         }));
-        return addEdge(newEdges[0], currentEdges);
+        
+        if (newEdges.length === 0) {
+            return currentEdges;
+        }
+
+        let updatedEdges = currentEdges;
+        newEdges.forEach(edge => {
+            updatedEdges = addEdge(edge, updatedEdges);
+        });
+        
+        return updatedEdges;
     });
 
   }, [setNodes, setEdges]);
