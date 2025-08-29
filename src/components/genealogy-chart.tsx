@@ -49,13 +49,12 @@ const initialNodes: Node[] = [
     type: 'person',
     position: { x: 0, y: 0 },
     data: { person: genealogyData, onExpand: () => {} },
-    sourcePosition: Position.Right,
-    targetPosition: Position.Left,
+    sourcePosition: Position.Bottom,
+    targetPosition: Position.Top,
   },
 ];
 
 const initialEdges: Edge[] = [];
-let layout = 'TB';
 
 export function GenealogyChart() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -70,7 +69,7 @@ export function GenealogyChart() {
             .map((child, index) => {
                 const parentNode = currentNodes.find(n => n.id === personToExpand.id);
                 const xOffset = (index - ((personToExpand.children?.length ?? 1) -1) / 2) * 250;
-                const yOffset = 200;
+                const yOffset = 250;
 
                 return {
                     id: child.id,
@@ -80,8 +79,8 @@ export function GenealogyChart() {
                         y: (parentNode?.position.y ?? 0) + yOffset
                     },
                     data: { person: child, onExpand: onExpand },
-                    sourcePosition: Position.Right,
-                    targetPosition: Position.Left,
+                    sourcePosition: Position.Bottom,
+                    targetPosition: Position.Top,
                 };
             });
 
@@ -96,12 +95,9 @@ export function GenealogyChart() {
             markerEnd: { type: MarkerType.ArrowClosed },
         }));
         
-        if (newEdges.length === 0) {
-            return currentEdges;
-        }
-
         let updatedEdges = currentEdges;
         newEdges.forEach(edge => {
+            // addEdge is idempotent, it won't add duplicates
             updatedEdges = addEdge(edge, updatedEdges);
         });
         
@@ -127,7 +123,6 @@ export function GenealogyChart() {
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      onConnect={(params) => setEdges((eds) => addEdge(params, eds))}
       nodeTypes={nodeTypes}
       fitView
       className="bg-background"
