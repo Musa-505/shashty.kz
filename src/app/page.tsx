@@ -7,38 +7,38 @@ import Link from "next/link";
 
 const featureCards = [
   {
-    title: "History",
-    description: "Journey through the ages of Kazakhstan.",
+    title: "Тарих",
+    description: "Қазақстанның ғасырлар қойнауына саяхат.",
     href: "/history",
     icon: <Landmark className="w-8 h-8 text-primary" />,
   },
   {
-    title: "Notable Figures",
-    description: "Learn about the people who shaped a nation.",
+    title: "Тұлғалар",
+    description: "Ұлт тағдырын айқындаған адамдар туралы біліңіз.",
     href: "/people",
     icon: <Users className="w-8 h-8 text-primary" />,
   },
   {
-    title: "Genealogy",
-    description: "Explore the intricate web of Kazakh ancestry.",
+    title: "Шежіре",
+    description: "Қазақ ру-тайпаларының тармақталған жүйесін зерттеңіз.",
     href: "/genealogy",
     icon: <GitBranch className="w-8 h-8 text-primary" />,
   },
   {
-    title: "News",
-    description: "Stay updated with the latest cultural news.",
+    title: "Жаңалықтар",
+    description: "Соңғы мәдени жаңалықтардан хабардар болыңыз.",
     href: "/news",
     icon: <FileText className="w-8 h-8 text-primary" />,
   },
    {
-    title: "Articles",
-    description: "In-depth articles on culture and values.",
+    title: "Мақалалар",
+    description: "Мәдениет пен құндылықтар туралы терең мақалалар.",
     href: "/articles",
     icon: <BookOpen className="w-8 h-8 text-primary" />,
   },
   {
-    title: "Contact Us",
-    description: "Share your thoughts and suggestions.",
+    title: "Байланыс",
+    description: "Өз ойларыңыз бен ұсыныстарыңызбен бөлісіңіз.",
     href: "/contact",
     icon: <Contact className="w-8 h-8 text-primary" />,
   },
@@ -64,16 +64,16 @@ export default function Home() {
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl font-headline text-foreground">
-                  Discover the Soul of Kazakhstan
+                  Қазақстанның жанын ашыңыз
                 </h1>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                  Explore the rich tapestry of Kazakh history, culture, and genealogy. Shashty.kz is your gateway to the heart of the great steppe.
+                  Қазақтың бай тарихын, мәдениетін және шежіресін зерттеңіз. Shashty.kz – ұлы даланың жүрегіне апаратын қақпаңыз.
                 </p>
               </div>
               <div className="space-x-4">
                 <Button asChild size="lg">
                   <Link href="/history">
-                    Start Exploring <ArrowRight className="ml-2 h-5 w-5" />
+                    Зерттеуді бастау <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
               </div>

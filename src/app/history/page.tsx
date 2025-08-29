@@ -4,37 +4,37 @@ import Image from "next/image";
 
 const historySections = [
     {
-        title: "Ancient Roots",
-        era: "Before 5th Century",
-        content: "The territory of modern Kazakhstan has been inhabited since the Paleolithic era. It served as a cradle for nomadic cultures like the Sakas and Scythians, who left behind a rich archaeological heritage, including the famous 'Golden Man'. These early tribes were known for their equestrian skills and sophisticated metalwork.",
+        title: "Ежелгі тамырлар",
+        era: "V ғасырға дейін",
+        content: "Қазіргі Қазақстан аумағы палеолит дәуірінен бері мекенделген. Ол «Алтын адам» сияқты бай археологиялық мұра қалдырған сақтар мен скифтер сияқты көшпелі мәдениеттердің бесігі болды. Бұл ертедегі тайпалар атқа міну шеберлігімен және күрделі металл өңдеуімен танымал болған.",
         imageUrl: "https://picsum.photos/800/600?random=1",
         imageHint: "ancient artifacts"
     },
     {
-        title: "The Great Turkic Khaganate",
-        era: "6th - 8th Centuries",
-        content: "The Turkic Khaganate was a vast empire that stretched across Central Asia, uniting various Turkic tribes. This period marked the consolidation of Turkic culture and language, laying the foundation for many modern Turkic nations, including the Kazakhs. The Silk Road flourished under their control, fostering trade and cultural exchange.",
+        title: "Ұлы Түрік қағанаты",
+        era: "VI - VIII ғасырлар",
+        content: "Түрік қағанаты Орталық Азияны алып жатқан, түркі тайпаларын біріктірген кең байтақ империя болды. Бұл кезең түркі мәдениеті мен тілінің шоғырлануымен ерекшеленді, бұл көптеген қазіргі түркі халықтарының, соның ішінде қазақтардың негізін қалады. Олардың бақылауында Ұлы Жібек жолы гүлденіп, сауда мен мәдени алмасуға ықпал етті.",
         imageUrl: "https://picsum.photos/800/600?random=2",
         imageHint: "steppe landscape"
     },
     {
-        title: "The Golden Horde and the Rise of the Kazakh Khanate",
-        era: "13th - 15th Centuries",
-        content: "Following the Mongol invasions, the territory became part of the Golden Horde. As the Horde weakened, local leaders Janibek and Kerei Khan founded the Kazakh Khanate in 1465. This event is considered the birth of Kazakh statehood, uniting the three main juzes (hordes) and establishing a distinct Kazakh identity.",
+        title: "Алтын Орда және Қазақ хандығының көтерілуі",
+        era: "XIII - XV ғасырлар",
+        content: "Моңғол шапқыншылығынан кейін бұл аумақ Алтын Орданың құрамына кірді. Орда әлсіреген кезде, жергілікті көшбасшылар Жәнібек пен Керей хан 1465 жылы Қазақ хандығын құрды. Бұл оқиға қазақ мемлекеттілігінің дүниеге келуі болып саналады, ол үш негізгі жүзді біріктіріп, ерекше қазақ бірегейлігін орнатты.",
         imageUrl: "https://picsum.photos/800/600?random=3",
         imageHint: "historical monument"
     },
     {
-        title: "Era of Trials and Russian Influence",
-        era: "18th - 20th Centuries",
-        content: "Facing threats from Dzungar invaders, the Kazakh khans sought protection from the Russian Empire. This led to a gradual absorption into the empire. The 20th century brought immense hardship, including the devastating famine of the 1930s (Asharshylyq) and political repression under Soviet rule, but also industrialization and modernization.",
+        title: "Сынақтар дәуірі және Ресей ықпалы",
+        era: "XVIII - XX ғасырлар",
+        content: "Жоңғар басқыншыларының қаупіне тап болған қазақ хандары Ресей империясынан қорғаныс іздеді. Бұл империяға біртіндеп қосылуға әкелді. 20 ғасыр 1930 жылдардағы ашаршылық пен Кеңес өкіметі тұсындағы саяси қуғын-сүргінді қоса алғанда, сонымен бірге индустрияландыру мен жаңғыртуды да алып келді.",
         imageUrl: "https://picsum.photos/800/600?random=4",
         imageHint: "old city"
     },
     {
-        title: "Independence and Modern Kazakhstan",
-        era: "1991 - Present",
-        content: "Kazakhstan declared independence on December 16, 1991, following the dissolution of the Soviet Union. Since then, the nation has navigated the complexities of post-Soviet transition, developing its vast natural resources, establishing a new capital in Astana (now Nur-Sultan), and forging its place on the global stage as a sovereign nation.",
+        title: "Тәуелсіздік және қазіргі Қазақстан",
+        era: "1991 - қазіргі уақыт",
+        content: "Қазақстан 1991 жылы 16 желтоқсанда Кеңес Одағының ыдырауынан кейін тәуелсіздігін жариялады. Содан бері ұлт посткеңестік кезеңнің күрделіліктерін еңсеріп, өзінің бай табиғи ресурстарын дамытып, Астанада (қазіргі Нұр-Сұлтан) жаңа астана құрып, жаһандық аренада егеменді ұлт ретінде өз орнын алды.",
         imageUrl: "https://picsum.photos/800/600?random=5",
         imageHint: "modern architecture"
     }
@@ -44,9 +44,9 @@ export default function HistoryPage() {
     return (
         <div className="container mx-auto px-4 py-12 md:px-6">
             <div className="space-y-4 text-center mb-12">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">A Journey Through Kazakh History</h1>
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Қазақ тарихына саяхат</h1>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                    From ancient nomads to a modern sovereign state, explore the pivotal moments that have shaped Kazakhstan.
+                    Ежелгі көшпенділерден қазіргі егеменді мемлекетке дейін – Қазақстанды қалыптастырған шешуші сәттерді зерттеңіз.
                 </p>
             </div>
 

@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!person) {
     return {
-      title: 'Figure Not Found',
+      title: 'Тұлға табылмады',
     };
   }
 
@@ -58,7 +58,7 @@ export default function PersonProfilePage({ params }: { params: { slug: string }
         <div className="md:col-span-2 space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Biography</CardTitle>
+              <CardTitle className="font-headline">Өмірбаяны</CardTitle>
             </CardHeader>
             <CardContent className="prose prose-lg dark:prose-invert max-w-none">
               <p>{person.biography}</p>
@@ -67,7 +67,7 @@ export default function PersonProfilePage({ params }: { params: { slug: string }
           
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Key Contributions</CardTitle>
+              <CardTitle className="font-headline">Негізгі үлестері</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
@@ -83,7 +83,7 @@ export default function PersonProfilePage({ params }: { params: { slug: string }
 
            <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Historical Importance</CardTitle>
+              <CardTitle className="font-headline">Тарихи маңызы</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">{person.summary}</p>

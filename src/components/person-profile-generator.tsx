@@ -18,7 +18,7 @@ import Image from 'next/image';
 
 const formSchema = z.object({
   name: z.string().min(3, {
-    message: 'Name must be at least 3 characters.',
+    message: 'Аты-жөні кемінде 3 таңбадан тұруы керек.',
   }),
   additionalContext: z.string().optional(),
 });
@@ -57,7 +57,7 @@ export function PersonProfileGenerator() {
         <CardHeader>
           <CardTitle className="font-headline flex items-center gap-2">
             <BrainCircuit className="h-6 w-6 text-primary" />
-            Generator
+            Генератор
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -68,9 +68,9 @@ export function PersonProfileGenerator() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name of Figure</FormLabel>
+                    <FormLabel>Тұлғаның аты-жөні</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Abai Kunanbaiuly" {...field} />
+                      <Input placeholder="Мысалы, Абай Құнанбайұлы" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -81,10 +81,10 @@ export function PersonProfileGenerator() {
                 name="additionalContext"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Additional Context (Optional)</FormLabel>
+                    <FormLabel>Қосымша контекст (міндетті емес)</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="e.g., Focus on his contributions to Kazakh literature"
+                        placeholder="Мысалы, оның қазақ әдебиетіне қосқан үлесіне назар аударыңыз"
                         className="resize-none"
                         {...field}
                       />
@@ -95,7 +95,7 @@ export function PersonProfileGenerator() {
               />
               <Button type="submit" disabled={loading} className="w-full">
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading ? 'Generating...' : 'Generate Profile'}
+                {loading ? 'Генерациялануда...' : 'Профильді генерациялау'}
               </Button>
             </form>
           </Form>
@@ -106,7 +106,7 @@ export function PersonProfileGenerator() {
         {loading && (
           <div className="flex flex-col items-center justify-center h-full space-y-4 p-8 rounded-lg border-2 border-dashed">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-muted-foreground">Generating profile... this may take a moment.</p>
+            <p className="text-muted-foreground">Профиль жасалуда... бұл біраз уақыт алуы мүмкін.</p>
           </div>
         )}
         {error && (
@@ -124,10 +124,10 @@ export function PersonProfileGenerator() {
                 <CardTitle className="font-headline text-3xl">{form.getValues('name')}</CardTitle>
               </CardHeader>
               <CardContent className="prose dark:prose-invert max-w-none">
-                <h3 className='font-headline'>Biography</h3>
+                <h3 className='font-headline'>Өмірбаяны</h3>
                 <p>{profile.biography}</p>
 
-                <h3 className='font-headline'>Key Facts</h3>
+                <h3 className='font-headline'>Негізгі деректер</h3>
                 <ul className="space-y-2">
                   {profile.keyFacts.map((fact, index) => (
                     <li key={index} className="flex items-start">
@@ -137,7 +137,7 @@ export function PersonProfileGenerator() {
                   ))}
                 </ul>
 
-                <h3 className='font-headline'>Historical Importance</h3>
+                <h3 className='font-headline'>Тарихи маңызы</h3>
                 <p>{profile.historicalImportanceSummary}</p>
               </CardContent>
             </Card>
@@ -145,7 +145,7 @@ export function PersonProfileGenerator() {
         )}
         {!loading && !profile && !error && (
             <div className="flex flex-col items-center justify-center h-full space-y-4 p-8 rounded-lg border-2 border-dashed">
-                <p className="text-muted-foreground text-center">The generated profile will appear here.</p>
+                <p className="text-muted-foreground text-center">Жасалған профиль осы жерде пайда болады.</p>
             </div>
         )}
       </div>

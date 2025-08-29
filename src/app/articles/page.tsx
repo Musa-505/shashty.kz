@@ -10,9 +10,9 @@ export default function ArticlesPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="space-y-4 text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Articles</h1>
+        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Мақалалар</h1>
         <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-          In-depth articles exploring the richness of Kazakh culture, traditions, and national values.
+          Қазақ мәдениеті, дәстүрлері және ұлттық құндылықтары туралы тереңдетілген мақалалар.
         </p>
       </div>
 
@@ -43,7 +43,7 @@ export default function ArticlesPage() {
             </CardContent>
             <CardFooter>
                <Link href="#" className="font-semibold text-primary group-hover:text-accent transition-colors">
-                Read More <ArrowRight className="inline-block w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"/>
+                Толығырақ <ArrowRight className="inline-block w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"/>
               </Link>
             </CardFooter>
           </Card>

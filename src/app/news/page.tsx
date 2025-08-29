@@ -9,9 +9,9 @@ export default function NewsPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="space-y-4 text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">News & Updates</h1>
+        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Жаңалықтар мен хабарландырулар</h1>
         <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-          The latest news and updates on Kazakh culture, heritage events, and historical discoveries.
+          Қазақ мәдениеті, мұра оқиғалары және тарихи жаңалықтар туралы соңғы жаңалықтар.
         </p>
       </div>
 
@@ -39,7 +39,7 @@ export default function NewsPage() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center">
                   <Link href="#" className="font-semibold text-primary hover:text-accent transition-colors">
-                    Read More
+                    Толығырақ
                   </Link>
                   <Badge variant="outline">{item.category}</Badge>
                 </CardFooter>

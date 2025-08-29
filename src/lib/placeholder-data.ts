@@ -2,45 +2,45 @@
 export const notableFigures = [
   {
     slug: "abai-kunanbaiuly",
-    name: "Abai Kunanbaiuly",
-    title: "Poet, Composer, Philosopher",
-    summary: "A great reformer who had a significant impact on the development of Kazakh national consciousness in the second half of the 19th century.",
-    biography: "Abai (Ibrahim) Kunanbaiuly was a Kazakh poet, composer and philosopher. He was also a cultural reformer toward European and Russian cultures on the basis of enlightened Islam. His writings also popularized Kazakh folk culture. He is credited with being the first to translate works of great Russian writers and poets such as Pushkin, Lermontov, and Krylov into the Kazakh language.",
+    name: "Абай Құнанбайұлы",
+    title: "Ақын, сазгер, философ",
+    summary: "XIX ғасырдың екінші жартысында қазақтың ұлттық сана-сезімінің дамуына елеулі ықпал еткен ұлы реформатор.",
+    biography: "Абай (Ибраһим) Құнанбайұлы – қазақтың ақыны, композиторы және философы. Ол сондай-ақ ағартушылық ислам негізінде еуропалық және орыс мәдениеттеріне бағытталған мәдени реформатор болды. Оның жазбалары қазақтың халық мәдениетін де дәріптеді. Ол Пушкин, Лермонтов, Крылов сияқты ұлы орыс жазушылары мен ақындарының шығармаларын қазақ тіліне бірінші болып аударған деп есептеледі.",
     contributions: [
-      "Founded modern Kazakh written literature.",
-      "Composed the famous 'Words of Edification' (Qara Sözder).",
-      "Translated over 50 works of Russian and European authors.",
-      "Introduced new poetic forms to Kazakh poetry."
+      "Қазіргі қазақ жазба әдебиетінің негізін қалады.",
+      "Атақты «Қара сөздерін» жазды.",
+      "Орыс және еуропа авторларының 50-ден астам шығармасын аударды.",
+      "Қазақ поэзиясына жаңа поэтикалық формалар енгізді."
     ],
     imageUrl: "https://picsum.photos/400/400?random=1",
     imageHint: "historical portrait"
   },
   {
     slug: "akhmet-baitursynov",
-    name: "Akhmet Baitursynov",
-    title: "Linguist, Politician, Educator",
-    summary: "A key figure of the Alash Orda movement and the father of modern Kazakh linguistics, who developed the Arabic-based Kazakh alphabet.",
-    biography: "Akhmet Baitursynov was a Kazakh intellectual who worked in the fields of politics, poetry, linguistics and education. Baitursynov reformed the Kazakh alphabet. In 1912, he excluded all the pure Arabic letters and introduced new letters to represent the specific sounds of the Kazakh language. The new alphabet, named 'Tote jazu' (meaning straight writing), is still used by Kazakhs living in China, Afghanistan, and Iran.",
+    name: "Ахмет Байтұрсынұлы",
+    title: "Тілші, саясаткер, ағартушы",
+    summary: "Алаш Орда қозғалысының негізгі қайраткері және қазіргі қазақ тіл білімінің атасы, араб негізді қазақ әліпбиін жасаған.",
+    biography: "Ахмет Байтұрсынұлы – саясат, поэзия, тіл білімі және білім беру салаларында еңбек еткен қазақ зиялысы. Байтұрсынұлы қазақ әліпбиін реформалады. 1912 жылы ол барлық таза араб әріптерін алып тастап, қазақ тілінің ерекше дыбыстарын білдіретін жаңа әріптер енгізді. «Төте жазу» деп аталатын жаңа әліпбиді Қытай, Ауғанстан және Иранда тұратын қазақтар әлі де қолданады.",
     contributions: [
-      "Co-founded the Alash Orda national movement.",
-      "Reformed the Kazakh alphabet, enhancing literacy.",
-      "Authored seminal works on Kazakh grammar and literature.",
-      "Served as People's Commissar of Education.",
+      "«Алаш Орда» ұлттық қозғалысының негізін қалаушылардың бірі.",
+      "Қазақ әліпбиін реформалап, сауаттылықты арттырды.",
+      "Қазақ грамматикасы мен әдебиеті бойынша іргелі еңбектер жазды.",
+      "Халық ағарту комиссары қызметін атқарды.",
     ],
     imageUrl: "https://picsum.photos/400/400?random=2",
     imageHint: "intellectual man"
   },
   {
     slug: "shoqan-walikhanov",
-    name: "Shoqan Walikhanov",
-    title: "Scholar, Explorer, Ethnographer",
-    summary: "The first Kazakh scholar and ethnographer, who conducted pioneering research on the history and culture of Central Asian peoples.",
-    biography: "Shoqan Shynghysuly Walikhanov was a Kazakh scholar, ethnographer, historian and participant in The Great Game. He is regarded as the father of modern Kazakh historiography and ethnography. The Russian Academy of Sciences elected him to its membership. His works on the geography, history, and culture of Central Asia were highly valued by Russian and European scientists.",
+    name: "Шоқан Уәлиханов",
+    title: "Ғалым, саяхатшы, этнограф",
+    summary: "Орталық Азия халықтарының тарихы мен мәдениетіне қатысты ізашар зерттеулер жүргізген алғашқы қазақ ғалымы және этнографы.",
+    biography: "Шоқан Шыңғысұлы Уәлиханов – қазақ ғалымы, этнографы, тарихшысы және «Үлкен ойынға» қатысушы. Ол қазіргі қазақ тарихнамасы мен этнографиясының атасы болып саналады. Ресей Ғылым академиясы оны өз мүшелігіне сайлады. Оның Орталық Азияның географиясы, тарихы және мәдениеті туралы еңбектері орыс және еуропа ғалымдары тарапынан жоғары бағаланды.",
     contributions: [
-      "First Kazakh to be elected to the Russian Geographical Society.",
-      "Conducted a famous covert journey to Kashgaria.",
-      "Documented the epic of Manas.",
-      "Created detailed maps and ethnographic descriptions of Central Asia."
+      "Орыс географиялық қоғамына сайланған алғашқы қазақ.",
+      "Қашқарияға әйгілі жасырын саяхат жасады.",
+      "«Манас» эпосын қағазға түсірді.",
+      "Орталық Азияның егжей-тегжейлі карталары мен этнографиялық сипаттамаларын жасады."
     ],
     imageUrl: "https://picsum.photos/400/400?random=3",
     imageHint: "scholar explorer"
@@ -50,28 +50,28 @@ export const notableFigures = [
 export const newsItems = [
   {
     id: 1,
-    title: "New 'Golden Man' Artifacts Uncovered in Eastern Kazakhstan",
-    summary: "Archaeologists have announced the discovery of a new burial mound containing artifacts similar to the famous 'Golden Man' of Issyk, shedding more light on the Saka civilization that roamed the steppes over 2,500 years ago.",
-    date: "October 26, 2023",
-    category: "Archaeology",
+    title: "Шығыс Қазақстанда жаңа 'Алтын адам' жәдігерлері табылды",
+    summary: "Археологтар 2500 жыл бұрын даланы кезген сақ өркениеті туралы көбірек мәлімет беретін әйгілі Есік 'Алтын адамына' ұқсас жәдігерлері бар жаңа қорғанның табылғанын жариялады.",
+    date: "26 қазан 2023",
+    category: "Археология",
     imageUrl: "https://picsum.photos/600/400?random=4",
     imageHint: "archaeological dig"
   },
   {
     id: 2,
-    title: "Nauryz Celebrations to be Extended to a 10-Day Festival",
-    summary: "The Ministry of Culture has proposed a new concept for celebrating Nauryz Meiramy, extending the traditional spring festival into a decade of cultural events named 'Nauryznama' to revive national traditions.",
-    date: "October 24, 2023",
-    category: "Culture",
+    title: "Наурыз мерекесі 10 күндік фестивальге ұзартылады",
+    summary: "Мәдениет министрлігі ұлттық дәстүрлерді жаңғырту мақсатында дәстүрлі көктем мерекесін 'Наурызнама' деп аталатын онкүндік мәдени іс-шараларға ұластыратын Наурыз мейрамын тойлаудың жаңа тұжырымдамасын ұсынды.",
+    date: "24 қазан 2023",
+    category: "Мәдениет",
     imageUrl: "https://picsum.photos/600/400?random=5",
     imageHint: "cultural festival"
   },
   {
     id: 3,
-    title: "International Conference on Abai's Legacy Held in Almaty",
-    summary: "Scholars from around the world gathered in Almaty to discuss the enduring legacy of Abai Kunanbaiuly. The conference focused on his philosophical 'Words of Edification' and their relevance in the 21st century.",
-    date: "October 22, 2023",
-    category: "Literature",
+    title: "Алматыда Абай мұрасына арналған халықаралық конференция өтті",
+    summary: "Әлемнің түкпір-түкпірінен ғалымдар Алматыда Абай Құнанбайұлының мәңгілік мұрасын талқылау үшін жиналды. Конференция оның философиялық 'Қара сөздеріне' және олардың 21 ғасырдағы өзектілігіне арналды.",
+    date: "22 қазан 2023",
+    category: "Әдебиет",
     imageUrl: "https://picsum.photos/600/400?random=6",
     imageHint: "conference hall"
   }
@@ -80,31 +80,31 @@ export const newsItems = [
 export const articles = [
   {
     id: 1,
-    title: "The Significance of the Shanyrak in Kazakh Culture",
+    title: "Қазақ мәдениетіндегі шаңырақтың маңызы",
     author: "Dr. Aida Zholdasova",
-    date: "September 15, 2023",
-    summary: "An exploration of the shanyrak, the top dome of a yurt, and its profound symbolism representing family, unity, and the cosmos in Kazakh tradition. It is more than an architectural element; it's the heart of the home.",
-    tags: ["Tradition", "Symbolism", "Yurt"],
+    date: "15 қыркүйек 2023",
+    summary: "Киіз үйдің күмбезі – шаңырақтың және оның қазақ дәстүріндегі отбасын, бірлікті және ғарышты білдіретін терең символизмін зерттеу. Бұл сәулет элементі ғана емес, бұл – үйдің жүрегі.",
+    tags: ["Дәстүр", "Символизм", "Киіз үй"],
     imageUrl: "https://picsum.photos/600/400?random=7",
     imageHint: "yurt interior"
   },
   {
     id: 2,
-    title: "Hospitality on the Great Steppe: The Art of 'Konakasy'",
-    author: "Timur Bekmambetov",
-    date: "September 5, 2023",
-    summary: "Delving into the sacred tradition of Kazakh hospitality (konakasy), where guests are seen as a blessing from God. The article covers the rituals, food, and the deep-seated cultural importance of welcoming travelers.",
-    tags: ["Culture", "Hospitality", "Values"],
+    title: "Ұлы даладағы қонақжайлылық: 'Қонақасы' өнері",
+    author: "Тимур Бекмамбетов",
+    date: "5 қыркүйек 2023",
+    summary: "Қонақты Құдайдың сыйы ретінде қабылдайтын қазақтың қасиетті қонақжайлылық (қонақасы) дәстүріне терең үңілу. Мақалада жолаушыларды қарсы алудың ғұрыптары, тағамы және терең тамырлы мәдени маңызы қамтылған.",
+    tags: ["Мәдениет", "Қонақжайлылық", "Құндылықтар"],
     imageUrl: "https://picsum.photos/600/400?random=8",
     imageHint: "traditional food"
   },
   {
     id: 3,
-    title: "Shejire: The Genealogical Chronicle of the Kazakh People",
-    author: "Prof. Ulan Saparov",
-    date: "August 28, 2023",
-    summary: "Understanding the Shejire, the oral and written genealogies that have been meticulously maintained for centuries. This practice not only tracks lineage but also serves as a historical record and a source of identity.",
-    tags: ["Genealogy", "History", "Identity"],
+    title: "Шежіре: Қазақ халқының генеалогиялық шежіресі",
+    author: "Проф. Ұлан Сапаров",
+    date: "28 тамыз 2023",
+    summary: "Ғасырлар бойы мұқият сақталған ауызша және жазбаша шежірелерді түсіну. Бұл тәжірибе тек ата-текті қадағалап қана қоймай, сонымен қатар тарихи жазба және бірегейлік көзі ретінде қызмет етеді.",
+    tags: ["Генеалогия", "Тарих", "Бірегейлік"],
     imageUrl: "https://picsum.photos/600/400?random=9",
     imageHint: "old manuscript"
   }

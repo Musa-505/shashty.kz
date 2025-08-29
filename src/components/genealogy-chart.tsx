@@ -25,8 +25,8 @@ export function GenealogyChart() {
       <div className="relative flex flex-col items-center space-y-16">
         {/* Grandparents */}
         <div className="flex justify-center space-x-24">
-          <PersonNode name="Qabanbai" clan="Senior Juz" />
-          <PersonNode name="Bogenbai" clan="Middle Juz" />
+          <PersonNode name="Қабанбай" clan="Ұлы жүз" />
+          <PersonNode name="Бөгенбай" clan="Орта жүз" />
         </div>
 
         {/* Connecting Lines to Parents */}
@@ -40,7 +40,7 @@ export function GenealogyChart() {
 
         {/* Parents */}
         <div className="flex justify-center">
-            <PersonNode name="Ablai Khan" clan="Middle Juz" />
+            <PersonNode name="Абылай хан" clan="Орта жүз" />
         </div>
         
         {/* Connecting Line to Central Person */}
@@ -49,9 +49,9 @@ export function GenealogyChart() {
         {/* Central Person & Spouse */}
         <div className="flex items-center justify-center space-x-16">
           <div className="flex items-center">
-             <PersonNode name="Kenesary" clan="Middle Juz" isCentral/>
+             <PersonNode name="Кенесары" clan="Орта жүз" isCentral/>
              <div className="w-16 h-px bg-border"></div>
-             <PersonNode name="Kunimzhan" clan="Spouse" />
+             <PersonNode name="Күнімжан" clan="Жұбайы" />
           </div>
         </div>
         
@@ -64,8 +64,8 @@ export function GenealogyChart() {
             <div className="absolute left-1/4 top-[29rem] h-8 w-px bg-border"></div>
             <div className="absolute right-1/4 top-[29rem] h-8 w-px bg-border"></div>
 
-          <PersonNode name="Syzdyq Sultan" />
-          <PersonNode name="Zhanibek" />
+          <PersonNode name="Сыздық сұлтан" />
+          <PersonNode name="Жәнібек" />
         </div>
         
       </div>

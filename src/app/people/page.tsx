@@ -10,13 +10,13 @@ export default function PeoplePage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="space-y-4 text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Notable Figures</h1>
+        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Атақты тұлғалар</h1>
         <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-          Discover the poets, warriors, leaders, and thinkers who have defined Kazakh history and culture.
+          Қазақ тарихы мен мәдениетін айқындаған ақындарды, батырларды, көшбасшыларды және ойшылдарды таныңыз.
         </p>
         <Button asChild>
           <Link href="/people/generate">
-            <BrainCircuit className="mr-2 h-4 w-4" /> Use AI Profile Generator
+            <BrainCircuit className="mr-2 h-4 w-4" /> AI Профиль Генераторын қолдану
           </Link>
         </Button>
       </div>
@@ -44,7 +44,7 @@ export default function PeoplePage() {
             <CardFooter>
               <Button asChild variant="link" className="p-0 h-auto">
                 <Link href={`/people/${person.slug}`}>
-                  View Profile <ArrowRight className="ml-2 h-4 w-4" />
+                  Профильді көру <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </CardFooter>
