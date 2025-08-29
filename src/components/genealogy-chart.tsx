@@ -1,74 +1,60 @@
 
 "use client";
 
+import React from 'react';
+import ReactFlow, {
+  Controls,
+  Background,
+  Node,
+  Edge,
+  MarkerType,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
-type PersonNodeProps = {
-  name: string;
-  clan?: string;
-  isCentral?: boolean;
-};
-
-const PersonNode = ({ name, clan, isCentral = false }: PersonNodeProps) => (
-  <Card className={cn("w-48 text-center shadow-md", isCentral ? "border-2 border-accent bg-accent/10" : "bg-card")}>
+const CustomNode = ({ data }: { data: { name: string; clan?: string } }) => (
+  <Card className="w-48 text-center shadow-md bg-card border-2 border-primary">
     <CardHeader className="p-4">
-      <CardTitle className="text-base font-bold">{name}</CardTitle>
-      {clan && <CardDescription>{clan}</CardDescription>}
+      <CardTitle className="text-base font-bold">{data.name}</CardTitle>
+      {data.clan && <CardDescription>{data.clan}</CardDescription>}
     </CardHeader>
   </Card>
 );
 
+const nodeTypes = {
+  custom: CustomNode,
+};
+
+const initialNodes: Node[] = [
+  { id: '1', type: 'custom', position: { x: 250, y: 0 }, data: { name: 'Абылай хан', clan: 'Орта жүз' } },
+  { id: '2', type: 'custom', position: { x: 0, y: 150 }, data: { name: 'Қабанбай', clan: 'Ұлы жүз' } },
+  { id: '3', type: 'custom', position: { x: 500, y: 150 }, data: { name: 'Бөгенбай', clan: 'Орта жүз' } },
+  { id: '4', type: 'custom', position: { x: 250, y: 300 }, data: { name: 'Кенесары', clan: 'Орта жүз' } },
+  { id: '5', type: 'custom', position: { x: 250, y: 450 }, data: { name: 'Сыздық сұлтан' } },
+  { id: '6', type: 'custom', position: { x: 500, y: 450 }, data: { name: 'Жәнібек' } },
+  { id: '7', type: 'custom', position: { x: 0, y: 450 }, data: { name: 'Күнімжан', clan: 'Жұбайы'} },
+];
+
+const initialEdges: Edge[] = [
+  { id: 'e1-4', source: '1', target: '4', markerEnd: { type: MarkerType.ArrowClosed } },
+  { id: 'e2-1', source: '2', target: '1', markerEnd: { type: MarkerType.ArrowClosed } },
+  { id: 'e3-1', source: '3', target: '1', markerEnd: { type: MarkerType.ArrowClosed } },
+  { id: 'e4-5', source: '4', target: '5', markerEnd: { type: MarkerType.ArrowClosed } },
+  { id: 'e4-6', source: '4', target: '6', markerEnd: { type: MarkerType.ArrowClosed } },
+  { id: 'e7-4', source: '7', target: '4', animated: true, markerEnd: { type: MarkerType.ArrowClosed } },
+];
+
 export function GenealogyChart() {
   return (
-    <div className="min-w-[800px] py-10">
-      <div className="relative flex flex-col items-center space-y-16">
-        {/* Grandparents */}
-        <div className="flex justify-center space-x-24">
-          <PersonNode name="Қабанбай" clan="Ұлы жүз" />
-          <PersonNode name="Бөгенбай" clan="Орта жүз" />
-        </div>
-
-        {/* Connecting Lines to Parents */}
-        <div className="absolute top-16 h-8 w-1/2">
-            <div className="absolute left-1/4 top-0 h-full w-px bg-border"></div>
-            <div className="absolute right-1/4 top-0 h-full w-px bg-border"></div>
-            <div className="absolute left-1/4 top-full h-px w-1/2 bg-border -translate-y-px"></div>
-        </div>
-        <div className="absolute top-24 left-1/2 h-8 w-px bg-border"></div>
-
-
-        {/* Parents */}
-        <div className="flex justify-center">
-            <PersonNode name="Абылай хан" clan="Орта жүз" />
-        </div>
-        
-        {/* Connecting Line to Central Person */}
-        <div className="absolute top-[16.5rem] left-1/2 h-8 w-px bg-border"></div>
-
-        {/* Central Person & Spouse */}
-        <div className="flex items-center justify-center space-x-16">
-          <div className="flex items-center">
-             <PersonNode name="Кенесары" clan="Орта жүз" isCentral/>
-             <div className="w-16 h-px bg-border"></div>
-             <PersonNode name="Күнімжан" clan="Жұбайы" />
-          </div>
-        </div>
-        
-        {/* Connecting Line to Children */}
-        <div className="absolute top-[27rem] left-1/2 h-8 w-px bg-border"></div>
-
-        {/* Children */}
-        <div className="flex justify-center space-x-8">
-            <div className="absolute top-[29rem] left-1/4 h-px w-1/2 bg-border"></div>
-            <div className="absolute left-1/4 top-[29rem] h-8 w-px bg-border"></div>
-            <div className="absolute right-1/4 top-[29rem] h-8 w-px bg-border"></div>
-
-          <PersonNode name="Сыздық сұлтан" />
-          <PersonNode name="Жәнібек" />
-        </div>
-        
-      </div>
-    </div>
+    <ReactFlow
+      nodes={initialNodes}
+      edges={initialEdges}
+      nodeTypes={nodeTypes}
+      fitView
+      className="bg-background"
+    >
+      <Controls />
+      <Background />
+    </ReactFlow>
   );
 }

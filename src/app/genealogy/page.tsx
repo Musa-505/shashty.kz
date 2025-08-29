@@ -11,7 +11,7 @@ export default function GenealogyPage() {
         </p>
       </div>
       
-      <div className="w-full overflow-x-auto p-4 bg-card rounded-lg shadow-lg">
+      <div className="w-full h-[600px] bg-card rounded-lg shadow-lg">
           <GenealogyChart />
       </div>
     </div>
