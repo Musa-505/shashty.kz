@@ -8,8 +8,6 @@ import ReactFlow, {
   Node,
   Edge,
   MarkerType,
-  addEdge,
-  Connection,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -47,7 +45,7 @@ const allEdges: Edge[] = [
 ];
 
 export function GenealogyChart() {
-  const [nodes, setNodes] = useState<Node[]>(allNodes);
+  const [nodes] = useState<Node[]>(allNodes);
   const [edges, setEdges] = useState<Edge[]>([]);
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
@@ -73,16 +71,11 @@ export function GenealogyChart() {
     });
   }, []);
 
-  const onConnect = useCallback(
-    (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  );
 
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
-      onConnect={onConnect}
       onNodeClick={onNodeClick}
       nodeTypes={nodeTypes}
       fitView
