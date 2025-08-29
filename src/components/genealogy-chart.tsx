@@ -1,82 +1,123 @@
 
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ReactFlow, {
   Controls,
   Background,
   Node,
   Edge,
   MarkerType,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  ReactFlowInstance,
+  Position
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { genealogyData, Person } from '@/lib/genealogy-data';
+import Image from 'next/image';
+import { Card } from './ui/card';
 
-const CustomNode = ({ data }: { data: { name: string; clan?: string } }) => (
-  <Card className="w-48 text-center shadow-md bg-card border-2 border-primary cursor-pointer hover:border-accent">
-    <CardHeader className="p-4">
-      <CardTitle className="text-base font-bold">{data.name}</CardTitle>
-      {data.clan && <CardDescription>{data.clan}</CardDescription>}
-    </CardHeader>
+const PersonNode = ({ data }: { data: { person: Person, onExpand: (person: Person) => void } }) => (
+  <Card 
+    className="w-48 text-center shadow-md bg-card border-2 border-primary cursor-pointer hover:border-accent p-2"
+    onClick={() => data.onExpand(data.person)}
+  >
+    <div className="relative w-full h-32 mb-2 rounded-md overflow-hidden">
+        <Image
+            src={data.person.imageUrl}
+            alt={data.person.name}
+            fill
+            className="object-cover"
+            sizes="150px"
+            data-ai-hint="historical portrait"
+        />
+    </div>
+    <h3 className="text-base font-bold font-headline">{data.person.name}</h3>
+    <p className="text-xs text-muted-foreground">{data.person.title}</p>
   </Card>
 );
 
 const nodeTypes = {
-  custom: CustomNode,
+  person: PersonNode,
 };
 
-const allNodes: Node[] = [
-  { id: '1', type: 'custom', position: { x: 250, y: 0 }, data: { name: 'Абылай хан', clan: 'Орта жүз' } },
-  { id: '2', type: 'custom', position: { x: 0, y: 150 }, data: { name: 'Қабанбай', clan: 'Ұлы жүз' } },
-  { id: '3', type: 'custom', position: { x: 500, y: 150 }, data: { name: 'Бөгенбай', clan: 'Орта жүз' } },
-  { id: '4', type: 'custom', position: { x: 250, y: 300 }, data: { name: 'Кенесары', clan: 'Орта жүз' } },
-  { id: '5', type: 'custom', position: { x: 250, y: 450 }, data: { name: 'Сыздық сұлтан' } },
-  { id: '6', type: 'custom', position: { x: 500, y: 450 }, data: { name: 'Жәнібек' } },
-  { id: '7', type: 'custom', position: { x: 0, y: 450 }, data: { name: 'Күнімжан', clan: 'Жұбайы'} },
+const initialNodes: Node[] = [
+  {
+    id: genealogyData.id,
+    type: 'person',
+    position: { x: 0, y: 0 },
+    data: { person: genealogyData, onExpand: () => {} },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+  },
 ];
 
-const allEdges: Edge[] = [
-  { id: 'e1-4', source: '1', target: '4', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-1', source: '2', target: '1', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e3-1', source: '3', target: '1', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e4-5', source: '4', target: '5', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e4-6', source: '4', target: '6', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e7-4', source: '7', target: '4', animated: true, markerEnd: { type: MarkerType.ArrowClosed } },
-];
+const initialEdges: Edge[] = [];
+let layout = 'TB';
 
 export function GenealogyChart() {
-  const [nodes] = useState<Node[]>(allNodes);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    // Find all edges connected to the clicked node
-    const connectedEdges = allEdges.filter(
-      (edge) => edge.source === node.id || edge.target === node.id
-    );
-    
-    // Add the newly found edges to the existing visible edges
-    // This uses a Set to prevent duplicate edges from being added
-    setEdges((prevEdges) => {
-        const newEdges = [...prevEdges];
-        const edgeIds = new Set(prevEdges.map(e => e.id));
-        
-        connectedEdges.forEach(edge => {
-            if (!edgeIds.has(edge.id)) {
-                newEdges.push(edge);
-                edgeIds.add(edge.id);
-            }
-        });
-        
-        return newEdges;
+   const onExpand = useCallback((personToExpand: Person) => {
+    setNodes((currentNodes) => {
+        const existingNodeIds = new Set(currentNodes.map(n => n.id));
+        const childNodes = (personToExpand.children ?? [])
+            .filter(child => !existingNodeIds.has(child.id))
+            .map((child, index) => {
+                const parentNode = currentNodes.find(n => n.id === personToExpand.id);
+                const xOffset = (index - ((personToExpand.children?.length ?? 1) -1) / 2) * 250;
+                const yOffset = 200;
+
+                return {
+                    id: child.id,
+                    type: 'person',
+                    position: { 
+                        x: (parentNode?.position.x ?? 0) + xOffset, 
+                        y: (parentNode?.position.y ?? 0) + yOffset
+                    },
+                    data: { person: child, onExpand: onExpand },
+                    sourcePosition: Position.Right,
+                    targetPosition: Position.Left,
+                };
+            });
+
+        return [...currentNodes, ...childNodes];
     });
-  }, []);
+
+    setEdges((currentEdges) => {
+        const newEdges = (personToExpand.children ?? []).map(child => ({
+            id: `e-${personToExpand.id}-${child.id}`,
+            source: personToExpand.id,
+            target: child.id,
+            markerEnd: { type: MarkerType.ArrowClosed },
+        }));
+        return addEdge(newEdges[0], currentEdges);
+    });
+
+  }, [setNodes, setEdges]);
+  
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        // give onExpand function to all nodes
+        node.data = { ...node.data, onExpand };
+        return node;
+      })
+    );
+  }, [onExpand, setNodes]);
 
 
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
-      onNodeClick={onNodeClick}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={(params) => setEdges((eds) => addEdge(params, eds))}
       nodeTypes={nodeTypes}
       fitView
       className="bg-background"
