@@ -2,7 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-import { generatePersonProfile, type GeneratePersonProfileOutput } from './ai/flows/generate-person-profile';
+import { generatePersonProfile, type GeneratePersonProfileOutput } from '@/ai/flows/generate-person-profile';
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
