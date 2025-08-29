@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -7,22 +6,16 @@ import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Menu, Globe } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Menu } from "lucide-react";
 
 
 const navLinks = [
-  { href: "/history", label: "History" },
-  { href: "/people", label: "Notable Figures" },
-  { href: "/genealogy", label: "Genealogy" },
-  { href: "/news", label: "News" },
-  { href: "/articles", label: "Articles" },
-  { href: "/contact", label: "Contact" },
+  { href: "/history", label: "Тарих" },
+  { href: "/people", label: "Тұлғалар" },
+  { href: "/genealogy", label: "Шежіре" },
+  { href: "/news", label: "Жаңалықтар" },
+  { href: "/articles", label: "Мақалалар" },
+  { href: "/contact", label: "Байланыс" },
 ];
 
 export function Header() {
@@ -73,21 +66,7 @@ export function Header() {
         </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Globe className="h-5 w-5" />
-                  <span className="sr-only">Change language</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>English</DropdownMenuItem>
-                <DropdownMenuItem disabled>Қазақша</DropdownMenuItem>
-                <DropdownMenuItem disabled>Русский</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-          <div className="md:hidden">
+            <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
