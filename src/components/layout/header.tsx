@@ -61,14 +61,14 @@ export function Header() {
           <span className="font-bold font-headline text-lg">Shashty.kz</span>
         </Link>
         
-        <nav className="hidden md:flex flex-1 items-center gap-6 text-sm">
-          {navLinks.map((link) => (
-            <NavLink key={link.href} {...link} />
-          ))}
-        </nav>
+        <div className="flex flex-1 items-center justify-end space-x-6">
+          <nav className="hidden md:flex items-center gap-6 text-sm">
+            {navLinks.map((link) => (
+              <NavLink key={link.href} {...link} />
+            ))}
+          </nav>
 
-        <div className="flex flex-1 items-center justify-end space-x-2">
-            <div className="md:hidden">
+          <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
