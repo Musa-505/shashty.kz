@@ -3,33 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { notableFigures } from "@/lib/placeholder-data";
-import { Edit, Trash2, PlusCircle, Users } from "lucide-react";
+import { Edit, Trash2, PlusCircle } from "lucide-react";
 import Link from 'next/link';
 
-export default function AdminDashboard() {
-  const recentFigures = notableFigures.slice(0, 5);
-
+export default function AdminPeoplePage() {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Басқару тақтасы</h1>
-            <p className="text-muted-foreground">Веб-сайт мазмұнын басқарыңыз.</p>
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Тұлғаларды басқару</h1>
+            <p className="text-muted-foreground">Веб-сайттағы атақты тұлғаларды қосыңыз, өңдеңіз немесе жойыңыз.</p>
         </div>
+        <Link href="/admin/people/new">
+            <Button>
+                <PlusCircle className="mr-2" />
+                Жаңа тұлға қосу
+            </Button>
+        </Link>
       </div>
       
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Соңғы тұлғалар</CardTitle>
-            <CardDescription>Жақында қосылған атақты тұлғалардың тізімі.</CardDescription>
-          </div>
-          <Link href="/admin/people">
-            <Button variant="outline">
-                <Users className="mr-2" />
-                Барлық тұлғаларды көру
-            </Button>
-        </Link>
+        <CardHeader>
+          <CardTitle>Барлық тұлғалар</CardTitle>
+          <CardDescription>Сайттағы барлық атақты тұлғалардың тізімі.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -41,17 +37,17 @@ export default function AdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentFigures.map((person) => (
+              {notableFigures.map((person) => (
                 <TableRow key={person.slug}>
                   <TableCell className="font-medium">{person.name}</TableCell>
                   <TableCell>{person.title}</TableCell>
                   <TableCell className="text-right">
-                    <Button asChild variant="ghost" size="icon">
-                      <Link href={`/admin/people/${person.slug}/edit`}>
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">Өңдеу</span>
-                      </Link>
-                    </Button>
+                     <Link href={`/admin/people/${person.slug}/edit`}>
+                        <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Өңдеу</span>
+                        </Button>
+                     </Link>
                     <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
                       <Trash2 className="h-4 w-4" />
                        <span className="sr-only">Жою</span>
