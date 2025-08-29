@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BookOpen, Contact, FileText, Landmark, Users, GitBranch } from "lucide-react";
+import { ArrowRight, BookOpen, Contact, FileText, Landmark, Users, GitBranch, HeartHandshake } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -35,6 +35,12 @@ const featureCards = [
     description: "Мәдениет пен құндылықтар туралы терең мақалалар.",
     href: "/articles",
     icon: <BookOpen className="w-8 h-8 text-primary" />,
+  },
+  {
+    title: "Үлес қосу",
+    description: "Мәдени мұраны сақтауға атсалысыңыз.",
+    href: "/contribute",
+    icon: <HeartHandshake className="w-8 h-8 text-primary" />,
   },
   {
     title: "Байланыс",

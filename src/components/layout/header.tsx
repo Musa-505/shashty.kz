@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -15,6 +16,7 @@ const navLinks = [
   { href: "/genealogy", label: "Шежіре" },
   { href: "/news", label: "Жаңалықтар" },
   { href: "/articles", label: "Мақалалар" },
+  { href: "/contribute", label: "Үлес қосу" },
   { href: "/contact", label: "Байланыс" },
 ];
 
