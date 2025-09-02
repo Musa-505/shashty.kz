@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 const formSchema = z.object({
   name: z.string().min(2, "Аты-жөні кемінде 2 таңбадан тұруы керек."),
   biography: z.string().min(20, "Өмірбаяны кемінде 20 таңбадан тұруы керек."),
-  imageUrl: z.string().url("Жарамсыз URL мекенжайы."),
+  imageUrls: z.string().url("Жарамсыз URL мекенжайы.").transform(val => [val]), // Start with one, but the data should be an array
 });
 
 type PersonFormValues = z.infer<typeof formSchema>;
@@ -25,7 +25,7 @@ interface PersonFormProps {
     slug: string;
     name: string;
     biography: string;
-    imageUrl: string;
+    imageUrls: string[];
   };
 }
 
@@ -40,7 +40,9 @@ export function PersonForm({ person }: PersonFormProps) {
         defaultValues: {
             name: person?.name ?? "",
             biography: person?.biography ?? "",
-            imageUrl: person?.imageUrl ?? "https://picsum.photos/400/400",
+            // For simplicity, this form only edits the first image URL.
+            // A more complex form would be needed to manage multiple URLs.
+            imageUrls: person?.imageUrls.slice(0,1) ?? ["https://picsum.photos/400/400"],
         },
     });
 
@@ -94,10 +96,10 @@ export function PersonForm({ person }: PersonFormProps) {
                 />
                 <FormField
                     control={form.control}
-                    name="imageUrl"
+                    name="imageUrls.0"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Сурет URL</FormLabel>
+                            <FormLabel>Негізгі сурет URL</FormLabel>
                             <FormControl>
                                 <Input placeholder="https://example.com/image.jpg" {...field} />
                             </FormControl>
@@ -105,6 +107,8 @@ export function PersonForm({ person }: PersonFormProps) {
                         </FormItem>
                     )}
                 />
+                 {/* Note: This form only supports editing the first image. 
+                     A dynamic array input would be needed for full multi-image editing. */}
             </CardContent>
             <CardFooter>
                  <Button type="submit">{isEditMode ? 'Сақтау' : 'Қосу'}</Button>

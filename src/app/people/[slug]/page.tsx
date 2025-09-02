@@ -3,6 +3,7 @@ import { notableFigures } from "@/lib/placeholder-data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import type { Metadata } from 'next';
 
 type Props = {
@@ -37,15 +38,29 @@ export default function PersonProfilePage({ params }: { params: { slug: string }
       <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
         <div className="md:col-span-1">
           <Card className="sticky top-24">
-            <div className="relative aspect-w-1 aspect-h-1 w-full">
-               <Image
-                src={person.imageUrl}
-                alt={person.name}
-                width={400}
-                height={400}
-                className="rounded-t-lg object-cover w-full"
-              />
-            </div>
+             <Carousel className="w-full">
+              <CarouselContent>
+                {person.imageUrls.map((url, index) => (
+                  <CarouselItem key={index}>
+                    <div className="relative aspect-w-1 aspect-h-1 w-full">
+                      <Image
+                        src={url}
+                        alt={`${person.name} суреті ${index + 1}`}
+                        width={400}
+                        height={400}
+                        className="rounded-t-lg object-cover w-full"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {person.imageUrls.length > 1 && (
+                <>
+                  <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
+                  <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
+                </>
+              )}
+            </Carousel>
             <CardHeader>
               <CardTitle className="font-headline text-3xl text-center">{person.name}</CardTitle>
             </CardHeader>

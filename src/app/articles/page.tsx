@@ -21,7 +21,7 @@ export default function ArticlesPage() {
           <Card key={article.id} className="flex flex-col overflow-hidden group">
             <div className="relative h-56 w-full">
               <Image
-                src={article.imageUrl}
+                src={article.imageUrls[0]}
                 alt={article.title}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

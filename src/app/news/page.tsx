@@ -21,7 +21,7 @@ export default function NewsPage() {
             <div className="grid md:grid-cols-3">
               <div className="md:col-span-1 relative h-64 md:h-full min-h-[200px]">
                 <Image
-                  src={item.imageUrl}
+                  src={item.imageUrls[0]}
                   alt={item.title}
                   fill
                   className="object-cover"

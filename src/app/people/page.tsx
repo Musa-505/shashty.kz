@@ -21,7 +21,7 @@ export default function PeoplePage() {
           <Card key={person.slug} className="overflow-hidden group flex flex-col">
             <div className="relative h-64 w-full">
               <Image
-                src={person.imageUrl}
+                src={person.imageUrls[0]}
                 alt={person.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

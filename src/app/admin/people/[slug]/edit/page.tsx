@@ -16,7 +16,7 @@ export default function EditPersonPage({ params }: { params: { slug: string } })
       slug: person.slug,
       name: person.name,
       biography: person.biography,
-      imageUrl: person.imageUrl,
+      imageUrls: person.imageUrls,
   }
 
   return (
