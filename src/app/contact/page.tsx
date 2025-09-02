@@ -1,83 +1,91 @@
 
-"use client";
-
-import { useFormState, useFormStatus } from "react-dom";
-import { submitContactForm } from "@/app/actions";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Mail, MessageSquare, User } from "lucide-react";
+import { Mail, MapPin, Phone, User } from "lucide-react";
+import Image from "next/image";
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? "Жіберілуде..." : "Хабарлама жіберу"}
-    </Button>
-  );
-}
+const contactPeople = [
+  {
+    name: "Асқарбеков Нұрлан",
+    role: "Қор төрағасы",
+    phone: "+7 (701) 123-45-67",
+  },
+  {
+    name: "Серікұлы Арман",
+    role: "Бас редактор",
+    phone: "+7 (707) 987-65-43",
+  },
+];
 
 export default function ContactPage() {
-  const initialState = { message: "", errors: {} };
-  const [state, dispatch] = useFormState(submitContactForm, initialState);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    if (state.message && !state.errors) {
-      toast({
-        title: "Сәтті!",
-        description: state.message,
-      });
-    } else if (state.message && state.errors) {
-       toast({
-        title: "Қате",
-        description: state.message,
-        variant: "destructive",
-      });
-    }
-  }, [state, toast]);
-
   return (
-    <div className="container mx-auto px-4 py-12 md:px-6 flex items-center justify-center min-h-[calc(100vh-10rem)]">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-headline">Бізбен хабарласыңыз</CardTitle>
-          <CardDescription>Сұрағыңыз немесе ұсынысыңыз бар ма? Бізге жазыңыз!</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form action={dispatch} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Аты-жөніңіз</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input id="name" name="name" placeholder="Сіздің аты-жөніңіз" required className="pl-10" />
+    <div className="container mx-auto px-4 py-12 md:px-6">
+      <div className="space-y-4 text-center mb-12">
+        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Бізбен байланыс</h1>
+        <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+          Сұрақтарыңыз немесе ұсыныстарыңыз болса, бізге хабарласыңыз.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-12">
+        <div>
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle>Байланыс ақпараты</CardTitle>
+              <CardDescription>
+                Төмендегі тұлғалармен немесе электрондық пошта арқылы хабарласа аласыз.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {contactPeople.map((person) => (
+                <div key={person.name} className="flex items-start gap-4">
+                  <User className="h-6 w-6 text-primary mt-1" />
+                  <div>
+                    <h3 className="font-semibold">{person.name}</h3>
+                    <p className="text-sm text-muted-foreground">{person.role}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <a href={`tel:${person.phone}`} className="text-sm hover:underline">
+                        {person.phone}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <div className="flex items-start gap-4">
+                <Mail className="h-6 w-6 text-primary mt-1" />
+                <div>
+                  <h3 className="font-semibold">Электрондық пошта</h3>
+                  <a href="mailto:info@shashty.kz" className="text-sm hover:underline">
+                    info@shashty.kz
+                  </a>
+                </div>
               </div>
-              {state.errors?.name && <p className="text-sm text-destructive">{state.errors.name.join(", ")}</p>}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Электрондық пошта</Label>
-               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input id="email" name="email" type="email" placeholder="sizdin@email.com" required className="pl-10"/>
+               <div className="flex items-start gap-4">
+                <MapPin className="h-6 w-6 text-primary mt-1" />
+                <div>
+                  <h3 className="font-semibold">Мекенжай</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Алматы қаласы, Абай даңғылы, 123-үй
+                  </p>
+                </div>
               </div>
-              {state.errors?.email && <p className="text-sm text-destructive">{state.errors.email.join(", ")}</p>}
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Card className="shadow-lg overflow-hidden h-full">
+            <div className="relative h-full min-h-[400px]">
+              <Image
+                src="https://picsum.photos/800/600?random=42"
+                alt="Карта"
+                fill
+                className="object-cover"
+                data-ai-hint="city map"
+              />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="message">Хабарлама</Label>
-              <div className="relative">
-                 <MessageSquare className="absolute left-3 top-4 h-5 w-5 text-muted-foreground" />
-                <Textarea id="message" name="message" placeholder="Сіздің хабарламаңыз..." required className="min-h-[120px] pl-10" />
-              </div>
-              {state.errors?.message && <p className="text-sm text-destructive">{state.errors.message.join(", ")}</p>}
-            </div>
-            <SubmitButton />
-          </form>
-        </CardContent>
-      </Card>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
