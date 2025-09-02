@@ -1,5 +1,6 @@
 
 import { Logo } from "@/components/logo";
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -10,9 +11,14 @@ export function Footer() {
             <Logo />
             <span className="font-bold font-headline text-lg">Shashty.kz</span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Shashty.kz. Сайт "ТорыШашты ата" қоғамдық қорының қолдауымен жасалған.
-          </p>
+          <div className="text-sm text-muted-foreground flex flex-col items-center md:items-end gap-2">
+             <p>
+                © {new Date().getFullYear()} Shashty.kz. Сайт "ТорыШашты ата" қоғамдық қорының қолдауымен жасалған.
+             </p>
+             <Link href="/admin" className="text-xs hover:underline">
+                Admin Panel
+              </Link>
+          </div>
         </div>
       </div>
     </footer>
