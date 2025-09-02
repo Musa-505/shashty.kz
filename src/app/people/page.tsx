@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { notableFigures } from "@/lib/placeholder-data";
-import { ArrowRight, BrainCircuit } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,11 +14,6 @@ export default function PeoplePage() {
         <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
           Қазақ тарихы мен мәдениетін айқындаған ақындарды, батырларды, көшбасшыларды және ойшылдарды таныңыз.
         </p>
-        <Button asChild>
-          <Link href="/people/generate">
-            <BrainCircuit className="mr-2 h-4 w-4" /> AI Профиль Генераторын қолдану
-          </Link>
-        </Button>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
