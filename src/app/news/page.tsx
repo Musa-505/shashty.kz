@@ -18,33 +18,33 @@ export default function NewsPage() {
       <div className="space-y-8">
         {newsItems.map((item) => (
           <Card key={item.id} className="w-full overflow-hidden transition-shadow hover:shadow-lg">
-            <div className="grid md:grid-cols-3">
-              <div className="md:col-span-1 relative h-64 md:h-full min-h-[200px]">
-                <Image
-                  src={item.imageUrls[0]}
-                  alt={item.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  data-ai-hint={item.imageHint}
-                />
-              </div>
-              <div className="md:col-span-2 flex flex-col">
-                <CardHeader>
-                  <CardTitle className="font-headline text-2xl">{item.title}</CardTitle>
-                  <CardDescription>{item.date}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <p className="text-muted-foreground line-clamp-4">{item.summary}</p>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center">
-                  <Link href="#" className="font-semibold text-primary hover:text-accent transition-colors">
-                    Толығырақ
-                  </Link>
-                  <Badge variant="outline">{item.category}</Badge>
-                </CardFooter>
-              </div>
-            </div>
+             <Link href={`/news/${item.slug}`} className="grid md:grid-cols-3 group">
+                <div className="md:col-span-1 relative h-64 md:h-full min-h-[200px]">
+                    <Image
+                    src={item.imageUrls[0]}
+                    alt={item.title}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    data-ai-hint={item.imageHint}
+                    />
+                </div>
+                <div className="md:col-span-2 flex flex-col">
+                    <CardHeader>
+                    <CardTitle className="font-headline text-2xl group-hover:text-primary transition-colors">{item.title}</CardTitle>
+                    <CardDescription>{item.date}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                    <p className="text-muted-foreground line-clamp-4">{item.summary}</p>
+                    </CardContent>
+                    <CardFooter className="flex justify-between items-center">
+                    <span className="font-semibold text-primary group-hover:text-accent transition-colors">
+                        Толығырақ
+                    </span>
+                    <Badge variant="outline">{item.category}</Badge>
+                    </CardFooter>
+                </div>
+            </Link>
           </Card>
         ))}
       </div>

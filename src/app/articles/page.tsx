@@ -20,14 +20,16 @@ export default function ArticlesPage() {
         {articles.map((article) => (
           <Card key={article.id} className="flex flex-col overflow-hidden group">
             <div className="relative h-56 w-full">
-              <Image
-                src={article.imageUrls[0]}
-                alt={article.title}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                data-ai-hint={article.imageHint}
-              />
+              <Link href={`/articles/${article.slug}`}>
+                <Image
+                  src={article.imageUrls[0]}
+                  alt={article.title}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  data-ai-hint={article.imageHint}
+                />
+              </Link>
             </div>
             <CardHeader>
               <div className="flex flex-wrap gap-2">
@@ -35,14 +37,18 @@ export default function ArticlesPage() {
                   <Badge key={tag} variant="secondary">{tag}</Badge>
                 ))}
               </div>
-              <CardTitle className="font-headline pt-2">{article.title}</CardTitle>
+              <CardTitle className="font-headline pt-2">
+                 <Link href={`/articles/${article.slug}`}>
+                    {article.title}
+                </Link>
+              </CardTitle>
               <CardDescription>{article.author} - {article.date}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
               <p className="text-muted-foreground line-clamp-3">{article.summary}</p>
             </CardContent>
             <CardFooter>
-               <Link href="#" className="font-semibold text-primary group-hover:text-accent transition-colors">
+               <Link href={`/articles/${article.slug}`} className="font-semibold text-primary group-hover:text-accent transition-colors">
                 Толығырақ <ArrowRight className="inline-block w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"/>
               </Link>
             </CardFooter>
