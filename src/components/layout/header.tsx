@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "../ui/sheet";
 import { Menu } from "lucide-react";
 
 
@@ -77,6 +77,9 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
+                <SheetHeader>
+                    <SheetTitle className="sr-only">Негізгі меню</SheetTitle>
+                </SheetHeader>
                 <div className="p-6">
                     <Link href="/" className="mr-6 flex items-center space-x-2 mb-6">
                         <Logo />
