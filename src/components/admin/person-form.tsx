@@ -1,34 +1,40 @@
 
 "use client"
 
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { createPerson, updatePerson } from "@/lib/firebase-service";
+import type { Person } from "@/lib/types";
+import { PlusCircle, Trash2 } from "lucide-react";
+
+// Helper to create a slug from a name
+const createSlug = (name: string) => {
+    return name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '') // remove invalid chars
+        .replace(/\s+/g, '-')           // collapse whitespace and replace by -
+        .replace(/-+/g, '-');          // collapse dashes
+};
 
 const formSchema = z.object({
   name: z.string().min(2, "Аты-жөні кемінде 2 таңбадан тұруы керек."),
   biography: z.string().min(20, "Өмірбаяны кемінде 20 таңбадан тұруы керек."),
-  imageUrls: z.string().url("Жарамсыз URL мекенжайы.").transform(val => [val]), // Start with one, but the data should be an array
+  imageUrls: z.array(z.object({ value: z.string().url("Жарамсыз URL мекенжайы.") })),
 });
 
 type PersonFormValues = z.infer<typeof formSchema>;
 
 interface PersonFormProps {
-  person?: {
-    slug: string;
-    name: string;
-    biography: string;
-    imageUrls: string[];
-  };
+  person?: Person;
 }
-
 
 export function PersonForm({ person }: PersonFormProps) {
     const { toast } = useToast();
@@ -40,24 +46,45 @@ export function PersonForm({ person }: PersonFormProps) {
         defaultValues: {
             name: person?.name ?? "",
             biography: person?.biography ?? "",
-            // For simplicity, this form only edits the first image URL.
-            // A more complex form would be needed to manage multiple URLs.
-            imageUrls: person?.imageUrls.slice(0,1) ?? ["https://picsum.photos/400/400"],
+            imageUrls: person?.imageUrls?.map(url => ({ value: url })) ?? [{ value: "" }],
         },
     });
+    
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: "imageUrls"
+    });
 
-    const onSubmit = (data: PersonFormValues) => {
-        // In a real application, you would handle form submission here,
-        // e.g., send data to your API to create/update a person.
-        console.log("Form submitted with data:", data);
+    const onSubmit = async (data: PersonFormValues) => {
+        const slug = createSlug(data.name);
+        const imageUrls = data.imageUrls.map(item => item.value).filter(Boolean); // Filter out empty strings
+        
+        const personData = {
+            ...data,
+            slug,
+            imageUrls,
+        };
 
-        toast({
-            title: isEditMode ? "Сәтті жаңартылды" : "Сәтті жасалды",
-            description: `${data.name} профилі ${isEditMode ? 'жаңартылды' : 'жасалды'}.`,
-        });
+        let result;
+        if (isEditMode && person.id) {
+            result = await updatePerson(person.id, personData);
+        } else {
+            result = await createPerson(personData);
+        }
 
-        // Redirect back to the people list page
-        router.push("/admin/people");
+        if (result.success) {
+            toast({
+                title: isEditMode ? "Сәтті жаңартылды" : "Сәтті жасалды",
+                description: `${data.name} профилі ${isEditMode ? 'жаңартылды' : 'жасалды'}.`,
+            });
+            router.push("/admin/people");
+        } else {
+            toast({
+                title: "Қате пайда болды",
+                description: result.error,
+                variant: "destructive",
+            });
+        }
     };
 
   return (
@@ -94,24 +121,47 @@ export function PersonForm({ person }: PersonFormProps) {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="imageUrls.0"
-                    render={({ field }) => (
+                <div>
+                  <FormLabel>Суреттер URL</FormLabel>
+                  <FormDescription>Тұлғаның суреттеріне сілтемелер.</FormDescription>
+                  <div className="space-y-2 mt-2">
+                  {fields.map((field, index) => (
+                    <FormField
+                        key={field.id}
+                        control={form.control}
+                        name={`imageUrls.${index}.value`}
+                        render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Негізгі сурет URL</FormLabel>
-                            <FormControl>
-                                <Input placeholder="https://example.com/image.jpg" {...field} />
-                            </FormControl>
+                            <div className="flex items-center gap-2">
+                                <FormControl>
+                                    <Input placeholder="https://example.com/image.jpg" {...field} />
+                                </FormControl>
+                                <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
                             <FormMessage />
                         </FormItem>
-                    )}
-                />
-                 {/* Note: This form only supports editing the first image. 
-                     A dynamic array input would be needed for full multi-image editing. */}
+                        )}
+                    />
+                  ))}
+                  </div>
+                   <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => append({ value: "" })}
+                    >
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Сурет қосу
+                    </Button>
+                </div>
             </CardContent>
             <CardFooter>
-                 <Button type="submit">{isEditMode ? 'Сақтау' : 'Қосу'}</Button>
+                 <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? 'Сақталуда...' : (isEditMode ? 'Сақтау' : 'Қосу')}
+                </Button>
                  <Button type="button" variant="outline" onClick={() => router.back()} className="ml-2">Болдырмау</Button>
             </CardFooter>
         </Card>

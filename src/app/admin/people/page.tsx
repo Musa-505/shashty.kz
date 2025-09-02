@@ -2,11 +2,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { notableFigures } from "@/lib/placeholder-data";
 import { Edit, Trash2, PlusCircle } from "lucide-react";
 import Link from 'next/link';
+import { getAllPeople } from "@/lib/firebase-service";
+import { DeletePersonButton } from "@/components/admin/delete-person-button";
 
-export default function AdminPeoplePage() {
+export default async function AdminPeoplePage() {
+  const people = await getAllPeople();
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -36,20 +39,17 @@ export default function AdminPeoplePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {notableFigures.map((person) => (
-                <TableRow key={person.slug}>
+              {people.map((person) => (
+                <TableRow key={person.id}>
                   <TableCell className="font-medium">{person.name}</TableCell>
                   <TableCell className="text-right">
-                     <Link href={`/admin/people/${person.slug}/edit`}>
+                     <Link href={`/admin/people/${person.id}/edit`}>
                         <Button variant="ghost" size="icon">
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Өңдеу</span>
                         </Button>
                      </Link>
-                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                       <span className="sr-only">Жою</span>
-                    </Button>
+                    <DeletePersonButton personId={person.id} />
                   </TableCell>
                 </TableRow>
               ))}

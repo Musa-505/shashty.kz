@@ -1,22 +1,15 @@
 
 import { PersonForm } from "@/components/admin/person-form";
-import { notableFigures } from "@/lib/placeholder-data";
+import { getPersonById } from "@/lib/firebase-service";
 import { notFound } from "next/navigation";
 
 
-export default function EditPersonPage({ params }: { params: { slug: string } }) {
-  const person = notableFigures.find(p => p.slug === params.slug);
+export default async function EditPersonPage({ params }: { params: { slug: string } }) {
+  // We use the ID (slug) from the URL to fetch the person
+  const person = await getPersonById(params.slug);
 
   if (!person) {
     notFound();
-  }
-
-  // Map the simplified person object for the form
-  const personForForm = {
-      slug: person.slug,
-      name: person.name,
-      biography: person.biography,
-      imageUrls: person.imageUrls,
   }
 
   return (
@@ -25,7 +18,7 @@ export default function EditPersonPage({ params }: { params: { slug: string } })
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Тұлғаны өңдеу</h1>
         <p className="text-muted-foreground">{person.name} туралы ақпаратты жаңартыңыз.</p>
       </div>
-      <PersonForm person={personForForm} />
+      <PersonForm person={person} />
     </div>
   );
 }

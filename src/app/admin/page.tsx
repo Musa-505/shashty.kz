@@ -2,12 +2,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { notableFigures } from "@/lib/placeholder-data";
+import { getAllPeople } from "@/lib/firebase-service";
 import { Edit, Trash2, Users } from "lucide-react";
 import Link from 'next/link';
 
-export default function AdminDashboard() {
-  const recentFigures = notableFigures.slice(0, 5);
+export default async function AdminDashboard() {
+  const allFigures = await getAllPeople();
+  const recentFigures = allFigures.slice(0, 5);
 
   return (
     <div className="space-y-8">
@@ -41,11 +42,11 @@ export default function AdminDashboard() {
             </TableHeader>
             <TableBody>
               {recentFigures.map((person) => (
-                <TableRow key={person.slug}>
+                <TableRow key={person.id}>
                   <TableCell className="font-medium">{person.name}</TableCell>
                   <TableCell className="text-right">
                     <Button asChild variant="ghost" size="icon">
-                      <Link href={`/admin/people/${person.slug}/edit`}>
+                      <Link href={`/admin/people/${person.id}/edit`}>
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Өңдеу</span>
                       </Link>

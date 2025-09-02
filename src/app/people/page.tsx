@@ -1,12 +1,16 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { notableFigures } from "@/lib/placeholder-data";
+import { getAllPeople } from "@/lib/firebase-service";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function PeoplePage() {
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export default async function PeoplePage() {
+  const notableFigures = await getAllPeople();
+
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="space-y-4 text-center mb-12">
@@ -21,7 +25,7 @@ export default function PeoplePage() {
           <Card key={person.slug} className="overflow-hidden group flex flex-col">
             <div className="relative h-64 w-full">
               <Image
-                src={person.imageUrls[0]}
+                src={person.imageUrls?.[0] || 'https://picsum.photos/400/400'}
                 alt={person.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

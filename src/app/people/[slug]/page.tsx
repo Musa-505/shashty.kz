@@ -1,5 +1,5 @@
 
-import { notableFigures } from "@/lib/placeholder-data";
+import { getPersonBySlug, getAllPeople } from "@/lib/firebase-service";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const person = notableFigures.find(p => p.slug === params.slug);
+  const person = await getPersonBySlug(params.slug);
 
   if (!person) {
     return {
@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 
-export default function PersonProfilePage({ params }: { params: { slug: string } }) {
-  const person = notableFigures.find(p => p.slug === params.slug);
+export default async function PersonProfilePage({ params }: { params: { slug: string } }) {
+  const person = await getPersonBySlug(params.slug);
 
   if (!person) {
     notFound();
@@ -40,7 +40,7 @@ export default function PersonProfilePage({ params }: { params: { slug: string }
           <Card className="sticky top-24">
              <Carousel className="w-full">
               <CarouselContent>
-                {person.imageUrls.map((url, index) => (
+                {(person.imageUrls && person.imageUrls.length > 0) ? person.imageUrls.map((url, index) => (
                   <CarouselItem key={index}>
                     <div className="relative aspect-w-1 aspect-h-1 w-full">
                       <Image
@@ -52,9 +52,21 @@ export default function PersonProfilePage({ params }: { params: { slug: string }
                       />
                     </div>
                   </CarouselItem>
-                ))}
+                )) : (
+                   <CarouselItem>
+                    <div className="relative aspect-w-1 aspect-h-1 w-full">
+                      <Image
+                        src="https://picsum.photos/400/400"
+                        alt={`${person.name} суреті`}
+                        width={400}
+                        height={400}
+                        className="rounded-t-lg object-cover w-full"
+                      />
+                    </div>
+                  </CarouselItem>
+                )}
               </CarouselContent>
-              {person.imageUrls.length > 1 && (
+              {person.imageUrls && person.imageUrls.length > 1 && (
                 <>
                   <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
                   <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
@@ -83,7 +95,8 @@ export default function PersonProfilePage({ params }: { params: { slug: string }
 }
 
 export async function generateStaticParams() {
-  return notableFigures.map(person => ({
+  const people = await getAllPeople();
+  return people.map(person => ({
     slug: person.slug,
   }));
 }
