@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { notableFigures } from "@/lib/placeholder-data";
-import { Edit, Trash2, PlusCircle, Users } from "lucide-react";
+import { Edit, Trash2, Users } from "lucide-react";
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -36,7 +36,6 @@ export default function AdminDashboard() {
             <TableHeader>
               <TableRow>
                 <TableHead>Аты-жөні</TableHead>
-                <TableHead>Атағы</TableHead>
                 <TableHead className="text-right">Әрекеттер</TableHead>
               </TableRow>
             </TableHeader>
@@ -44,7 +43,6 @@ export default function AdminDashboard() {
               {recentFigures.map((person) => (
                 <TableRow key={person.slug}>
                   <TableCell className="font-medium">{person.name}</TableCell>
-                  <TableCell>{person.title}</TableCell>
                   <TableCell className="text-right">
                     <Button asChild variant="ghost" size="icon">
                       <Link href={`/admin/people/${person.slug}/edit`}>

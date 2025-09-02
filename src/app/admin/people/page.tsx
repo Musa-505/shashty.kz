@@ -32,7 +32,6 @@ export default function AdminPeoplePage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Аты-жөні</TableHead>
-                <TableHead>Атағы</TableHead>
                 <TableHead className="text-right">Әрекеттер</TableHead>
               </TableRow>
             </TableHeader>
@@ -40,7 +39,6 @@ export default function AdminPeoplePage() {
               {notableFigures.map((person) => (
                 <TableRow key={person.slug}>
                   <TableCell className="font-medium">{person.name}</TableCell>
-                  <TableCell>{person.title}</TableCell>
                   <TableCell className="text-right">
                      <Link href={`/admin/people/${person.slug}/edit`}>
                         <Button variant="ghost" size="icon">

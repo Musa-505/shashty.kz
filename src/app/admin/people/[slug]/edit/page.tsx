@@ -11,13 +11,21 @@ export default function EditPersonPage({ params }: { params: { slug: string } })
     notFound();
   }
 
+  // Map the simplified person object for the form
+  const personForForm = {
+      slug: person.slug,
+      name: person.name,
+      biography: person.biography,
+      imageUrl: person.imageUrl,
+  }
+
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Тұлғаны өңдеу</h1>
         <p className="text-muted-foreground">{person.name} туралы ақпаратты жаңартыңыз.</p>
       </div>
-      <PersonForm person={person} />
+      <PersonForm person={personForForm} />
     </div>
   );
 }

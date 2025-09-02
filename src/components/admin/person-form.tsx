@@ -14,12 +14,8 @@ import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, "Аты-жөні кемінде 2 таңбадан тұруы керек."),
-  title: z.string().min(2, "Атағы кемінде 2 таңбадан тұруы керек."),
-  summary: z.string().min(10, "Қысқаша мазмұны кемінде 10 таңбадан тұруы керек."),
   biography: z.string().min(20, "Өмірбаяны кемінде 20 таңбадан тұруы керек."),
-  contributions: z.string().min(10, "Үлестері кемінде 10 таңбадан тұруы керек."),
   imageUrl: z.string().url("Жарамсыз URL мекенжайы."),
-  imageHint: z.string().optional(),
 });
 
 type PersonFormValues = z.infer<typeof formSchema>;
@@ -28,12 +24,8 @@ interface PersonFormProps {
   person?: {
     slug: string;
     name: string;
-    title: string;
-    summary: string;
     biography: string;
-    contributions: string[];
     imageUrl: string;
-    imageHint?: string;
   };
 }
 
@@ -47,12 +39,8 @@ export function PersonForm({ person }: PersonFormProps) {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: person?.name ?? "",
-            title: person?.title ?? "",
-            summary: person?.summary ?? "",
             biography: person?.biography ?? "",
-            contributions: person?.contributions.join("\n") ?? "",
             imageUrl: person?.imageUrl ?? "https://picsum.photos/400/400",
-            imageHint: person?.imageHint ?? ""
         },
     });
 
@@ -93,51 +81,12 @@ export function PersonForm({ person }: PersonFormProps) {
                 />
                 <FormField
                     control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Атағы</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Мысалы, Ақын, сазгер, философ" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="summary"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Қысқаша мазмұны</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Тұлға туралы қысқаша сипаттама" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
                     name="biography"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Өмірбаяны</FormLabel>
                             <FormControl>
                                 <Textarea placeholder="Толық өмірбаяны" className="min-h-[150px]" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="contributions"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Негізгі үлестері</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Әр үлесті жаңа жолдан енгізіңіз" className="min-h-[100px]" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -156,19 +105,6 @@ export function PersonForm({ person }: PersonFormProps) {
                         </FormItem>
                     )}
                 />
-                 <FormField
-                    control={form.control}
-                    name="imageHint"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Суретке AI кеңесі</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Мысалы, historical portrait" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
             </CardContent>
             <CardFooter>
                  <Button type="submit">{isEditMode ? 'Сақтау' : 'Қосу'}</Button>
@@ -179,4 +115,3 @@ export function PersonForm({ person }: PersonFormProps) {
     </Form>
   );
 }
-

@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { notableFigures } from "@/lib/placeholder-data";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -26,20 +26,18 @@ export default function PeoplePage() {
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                data-ai-hint={person.imageHint}
               />
             </div>
             <CardHeader>
               <CardTitle className="font-headline">{person.name}</CardTitle>
-              <CardDescription>{person.title}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
-              <p className="text-muted-foreground line-clamp-3">{person.summary}</p>
+              <p className="text-muted-foreground line-clamp-4">{person.biography}</p>
             </CardContent>
             <CardFooter>
               <Button asChild variant="link" className="p-0 h-auto">
                 <Link href={`/people/${person.slug}`}>
-                  Профильді көру <ArrowRight className="ml-2 h-4 w-4" />
+                  Толығырақ <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </CardFooter>
