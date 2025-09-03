@@ -2,20 +2,28 @@
 export interface FamilyMember {
   id: string;
   name: string;
-  gender: 'male' | 'female';
   parents: string[];
 }
 
-// Мысал ретінде 10 атадан тұратын тізім
+// Мысал ретінде тармақталған шежіре
 export const familyMembers: FamilyMember[] = [
-  { id: '1', name: 'Бірінші Ата', gender: 'male', parents: [] },
-  { id: '2', name: 'Екінші Ата', gender: 'male', parents: ['1'] },
-  { id: '3', name: 'Үшінші Ата', gender: 'male', parents: ['2'] },
-  { id: '4', name: 'Төртінші Ата', gender: 'male', parents: ['3'] },
-  { id: '5', name: 'Бесінші Ата', gender: 'male', parents: ['4'] },
-  { id: '6', name: 'Алтыншы Ата', gender: 'male', parents: ['5'] },
-  { id: '7', name: 'Жетінші Ата', gender: 'male', parents: ['6'] },
-  { id: '8', name: 'Сегізінші Ата', gender: 'male', parents: ['7'] },
-  { id: '9', name: 'Тоғызыншы Ата', gender: 'male', parents: ['8'] },
-  { id: '10', name: 'Оныншы Ата', gender: 'male', parents: ['9'] },
+  // 1-ші буын
+  { id: '1', name: 'Негізгі Ата', parents: [] },
+
+  // 2-ші буын - Негізгі Атаның балалары
+  { id: '2', name: 'Бірінші Ұлы', parents: ['1'] },
+  { id: '3', name: 'Екінші Ұлы', parents: ['1'] },
+  { id: '4', name: 'Үшінші Ұлы', parents: ['1'] },
+
+  // 3-ші буын - Немерелері
+  { id: '5', name: 'Біріншінің жалғыз ұлы', parents: ['2'] },
+  { id: '6', name: 'Екіншінің бірінші ұлы', parents: ['3'] },
+  { id: '7', name: 'Екіншінің екінші ұлы', parents: ['3'] },
+  { id: '8', name: 'Үшіншінің бірінші ұлы', parents: ['4'] },
+  { id: '9', name: 'Үшіншінің екінші ұлы', parents: ['4'] },
+  { id: '10', name: 'Үшіншінің үшінші ұлы', parents: ['4'] },
+  
+  // 4-ші буын - Шөберелері
+  { id: '11', name: 'Екінші немеренің ұлы', parents: ['7'] },
+  { id: '12', name: 'Төртінші немеренің ұлы', parents: ['9'] },
 ];

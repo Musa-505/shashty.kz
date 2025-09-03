@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useMemo, useEffect, useCallback } from 'react';
+import React, { useMemo, useEffect, useCallback, useState } from 'react';
 import ReactFlow, {
     Controls,
     Background,
@@ -30,10 +30,10 @@ function CustomNode({ data }: NodeProps<CustomNodeData>) {
 
     const nodeClasses = `
         p-3 rounded-md shadow-md border-2
-        bg-gradient-to-br from-green-100 to-green-200 border-green-400
+        bg-gradient-to-br from-blue-100 to-blue-200 border-blue-400
         text-center transition-transform transform hover:scale-105 duration-300
         min-w-[150px] max-w-[220px] flex justify-center items-center
-        text-green-900 font-semibold cursor-pointer
+        text-blue-900 font-semibold cursor-pointer
     `;
     
     return (
@@ -45,7 +45,6 @@ function CustomNode({ data }: NodeProps<CustomNodeData>) {
     );
 }
 
-
 // ==================== Layouting Function ====================
 const nodeWidth = 200;
 const nodeHeight = 60;
@@ -53,7 +52,7 @@ const nodeHeight = 60;
 const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ rankdir: direction, nodesep: 50, ranksep: 70 });
+    dagreGraph.setGraph({ rankdir: direction, nodesep: 25, ranksep: 50 });
 
     nodes.forEach((node) => {
         dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -84,54 +83,70 @@ export function GenealogyChart() {
     const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [isLaidOut, setIsLaidOut] = useState(false);
 
     const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
-    
+
     const onNodeClick = useCallback((event: React.MouseEvent, node: any) => {
         const memberId = node.id;
-        
-        setNodes(prevNodes => {
-            const existingNodeIds = new Set(prevNodes.map(n => n.id));
-            const newNodes: any[] = [];
-            const newEdges: any[] = [];
 
+        setNodes((prevNodes) => {
+            const existingNodeIds = new Set(prevNodes.map(n => n.id));
             const children = familyMembers.filter(m => m.parents.includes(memberId));
             
-            const alreadyVisibleChildren = children.every(child => existingNodeIds.has(child.id));
-            if (alreadyVisibleChildren) return prevNodes;
+            const newChildren = children.filter(child => !existingNodeIds.has(child.id));
 
-            children.forEach(child => {
-                if (!existingNodeIds.has(child.id)) {
-                    newNodes.push({
-                        id: child.id,
-                        type: 'customNode',
-                        data: { label: child.name, member: child },
-                    });
-                    newEdges.push({ id: `e-${memberId}-${child.id}`, source: memberId, target: child.id, style: { strokeWidth: 1.5, stroke: '#A1A1AA' } });
-                }
-            });
+            if (newChildren.length === 0) {
+                return prevNodes; // No new children to add
+            }
+
+            const newNodes = newChildren.map(child => ({
+                id: child.id,
+                type: 'customNode',
+                data: { label: child.name, member: child },
+                position: { x: 0, y: 0 }, // Position will be set by layout
+            }));
             
-            if (newNodes.length === 0) return prevNodes;
+            const newEdges = newChildren.map(child => ({
+                id: `e-${memberId}-${child.id}`,
+                source: memberId,
+                target: child.id,
+                style: { strokeWidth: 1.5, stroke: '#A1A1AA' },
+            }));
 
             const allNodes = [...prevNodes, ...newNodes];
             const allEdges = [...edges, ...newEdges];
-            
+
             const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(allNodes, allEdges);
+            
             setEdges(layoutedEdges);
+            setIsLaidOut(false); // Trigger re-layout
             return layoutedNodes;
         });
     }, [edges, setEdges, setNodes]);
 
     useEffect(() => {
+        if (!isLaidOut) {
+            const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges);
+            setNodes(layoutedNodes);
+            setEdges(layoutedEdges);
+            setIsLaidOut(true);
+        }
+    }, [nodes, edges, isLaidOut, setNodes, setEdges]);
+    
+
+    useEffect(() => {
         const rootMember = familyMembers.find(m => m.parents.length === 0);
         if (rootMember) {
-            setNodes([{
+            const initialNode = {
                 id: rootMember.id,
                 type: 'customNode',
                 data: { label: rootMember.name, member: rootMember },
                 position: { x: 400, y: 50 },
-            }]);
+            };
+            setNodes([initialNode]);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -152,7 +167,7 @@ export function GenealogyChart() {
             >
                 <MiniMap 
                     nodeStrokeWidth={3} 
-                    nodeColor={() => '#22c55e'}
+                    nodeColor={() => '#3b82f6'} // Blue color for all nodes
                     nodeBorderRadius={5}
                 />
                 <Controls />
