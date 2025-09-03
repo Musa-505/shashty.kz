@@ -17,6 +17,7 @@ import ReactFlow, {
 import dagre from 'dagre';
 import 'reactflow/dist/style.css';
 import type { FamilyMember } from '@/lib/genealogy-data';
+import { familyMembers } from '@/lib/genealogy-data';
 
 // ==================== Custom Node Component ====================
 
@@ -26,14 +27,15 @@ interface CustomNodeData {
         id: string;
         name: string;
         surname: string;
-        birthYear: string;
+        birthYear: number | string;
         gender: 'male' | 'female' | 'couple';
         members?: FamilyMember[]; // For couples
     };
+    onExpand: (memberId: string) => void;
 }
 
-function CustomNode({ data }: NodeProps<CustomNodeData>) {
-    const { member } = data;
+function CustomNode({ data, id }: NodeProps<CustomNodeData>) {
+    const { member, onExpand, label } = data;
     const isCouple = member.gender === 'couple';
     const isMale = member.gender === 'male';
 
@@ -48,31 +50,24 @@ function CustomNode({ data }: NodeProps<CustomNodeData>) {
         }
         text-center transition-transform transform hover:scale-105 duration-300
         min-w-[150px] max-w-[220px] flex flex-col justify-center items-center
-        text-white font-sans
+        text-white font-sans cursor-pointer
     `;
+    
+    // Only male nodes can be expanded to show children
+    const handleNodeClick = () => {
+        if (isMale || isCouple) {
+            onExpand(member.id);
+        }
+    };
 
     return (
         <div
             className={nodeClasses}
-            style={{
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            }}
+            style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+            onClick={handleNodeClick}
         >
             <Handle type="target" position={Position.Top} className="w-2 h-2 bg-gray-400 rounded-full !-top-1 opacity-50" />
-
-            {isCouple && member.members ? (
-                <>
-                    <div className="font-bold text-base leading-tight">{member.members[0].name} & {member.members[1].name}</div>
-                    <div className="text-xs opacity-90">{member.members[0].surname} & {member.members[1].surname}</div>
-                </>
-            ) : (
-                <>
-                    <div className="font-bold text-base leading-tight">{member.name}</div>
-                    <div className="text-sm leading-tight opacity-90">{member.surname}</div>
-                    <div className="text-xs opacity-70">({member.birthYear})</div>
-                </>
-            )}
-
+                <div className="font-bold text-base leading-tight">{label}</div>
             {(isMale || isCouple) && (
                 <Handle type="source" position={Position.Bottom} className="w-2 h-2 bg-gray-400 rounded-full !-bottom-1 opacity-50" />
             )}
@@ -89,7 +84,6 @@ const nodeHeight = 80;
 const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
-
     dagreGraph.setGraph({ rankdir: direction, nodesep: 50, ranksep: 80 });
 
     nodes.forEach((node) => {
@@ -118,7 +112,7 @@ const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
 
 // ==================== Main Family Tree Component ====================
 
-import { familyMembers } from '@/lib/genealogy-data';
+const memberMap = new Map(familyMembers.map(m => [m.id, m]));
 
 export function GenealogyChart() {
     const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
@@ -127,98 +121,64 @@ export function GenealogyChart() {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+    
+    const onExpand = useCallback((memberId: string) => {
+        setNodes(prevNodes => {
+            const existingNodeIds = new Set(prevNodes.map(n => n.id));
+            const newNodes: any[] = [];
+            const newEdges: any[] = [];
 
+            const children = familyMembers.filter(m => m.parents.includes(memberId) && m.gender === 'male');
+
+            children.forEach(child => {
+                if (!existingNodeIds.has(child.id)) {
+                    // Find spouse
+                    const spouse = familyMembers.find(f => f.gender === 'female' && familyMembers.some(grandChild => grandChild.parents.includes(child.id) && grandChild.parents.includes(f.id)));
+                    
+                    let sourceId = child.id;
+                    
+                    if (spouse && !existingNodeIds.has(`couple-${child.id}-${spouse.id}`)) {
+                       const coupleId = `couple-${child.id}-${spouse.id}`;
+                       newNodes.push({
+                            id: coupleId,
+                            type: 'customNode',
+                            data: { label: `${child.name} & ${spouse.name}`, member: { id: coupleId, gender: 'couple' }, onExpand },
+                       });
+                       newEdges.push({ id: `e-${memberId}-${coupleId}`, source: memberId, target: coupleId, style: { strokeWidth: 1.5, stroke: '#A1A1AA' } });
+                       sourceId = coupleId;
+                    } else {
+                       newNodes.push({
+                           id: child.id,
+                           type: 'customNode',
+                           data: { label: `${child.name} ${child.surname}`, member: child, onExpand },
+                       });
+                       newEdges.push({ id: `e-${memberId}-${child.id}`, source: memberId, target: child.id, style: { strokeWidth: 1.5, stroke: '#A1A1AA' } });
+                    }
+                }
+            });
+            
+            if (newNodes.length === 0) return prevNodes;
+
+            const allNodes = [...prevNodes, ...newNodes];
+            setEdges(prevEdges => [...prevEdges, ...newEdges]);
+            
+            const { nodes: layoutedNodes } = getLayoutedElements(allNodes, [...edges, ...newEdges]);
+            return layoutedNodes;
+        });
+
+    }, [setNodes, setEdges, nodes, edges]);
+    
     useEffect(() => {
-        const memberMap = new Map(familyMembers.map(m => [m.id, m]));
-        const processedMemberIds = new Set<string>();
-        let generatedNodes: any[] = [];
-        let generatedEdges: any[] = [];
-
-        familyMembers.forEach(member => {
-            if (processedMemberIds.has(member.id)) return;
-
-            // Check for a spouse
-            const spouse = familyMembers.find(other => 
-                other.id !== member.id &&
-                other.gender !== member.gender &&
-                member.parents.join(',') === other.parents.join(',') && // Not siblings
-                familyMembers.some(child => 
-                    child.parents.includes(member.id) && child.parents.includes(other.id)
-                )
-            );
-
-            if (spouse && !processedMemberIds.has(spouse.id)) {
-                // This is a couple
-                const male = member.gender === 'male' ? member : spouse;
-                const female = member.gender === 'female' ? member : spouse;
-                const coupleNodeId = `couple-${male.id}-${female.id}`;
-
-                generatedNodes.push({
-                    id: coupleNodeId,
-                    type: 'customNode',
-                    data: {
-                        label: `${male.name} & ${female.name}`,
-                        member: {
-                            id: coupleNodeId,
-                            gender: 'couple',
-                            members: [male, female]
-                        }
-                    },
-                    position: { x: 0, y: 0 },
-                });
-                
-                // Link children to the couple node
-                const children = familyMembers.filter(child => child.parents.includes(male.id) && child.parents.includes(female.id));
-                children.forEach(child => {
-                    generatedEdges.push({
-                        id: `e-${coupleNodeId}-${child.id}`,
-                        source: coupleNodeId,
-                        target: child.id,
-                        style: { strokeWidth: 1.5, stroke: '#A1A1AA' },
-                    });
-                });
-
-                processedMemberIds.add(male.id);
-                processedMemberIds.add(female.id);
-
-            } else if (!spouse) {
-                // This is a single person (or part of a couple already processed)
-                generatedNodes.push({
-                    id: member.id,
-                    type: 'customNode',
-                    data: { label: `${member.name} ${member.surname}`, member },
-                    position: { x: 0, y: 0 },
-                });
-            }
-        });
-        
-        // Link single parents to their children
-        familyMembers.forEach(child => {
-             if (child.parents.length === 1) {
-                 const parentId = child.parents[0];
-                 const parentNode = generatedNodes.find(n => n.id === parentId);
-                 if (parentNode) {
-                     generatedEdges.push({
-                         id: `e-${parentId}-${child.id}`,
-                         source: parentId,
-                         target: child.id,
-                         style: { strokeWidth: 1.5, stroke: '#A1A1AA' },
-                     });
-                 }
-             }
-        });
-
-
-        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-            generatedNodes,
-            generatedEdges
-        );
-
-        setNodes(layoutedNodes);
-        setEdges(layoutedEdges);
-
-    }, [setNodes, setEdges]);
-
+        const rootMember = familyMembers.find(m => m.parents.length === 0 && m.gender === 'male');
+        if (rootMember) {
+            setNodes([{
+                id: rootMember.id,
+                type: 'customNode',
+                data: { label: `${rootMember.name} ${rootMember.surname}`, member: rootMember, onExpand },
+                position: { x: 400, y: 50 },
+            }]);
+        }
+    }, []); // Run only once
 
     return (
         <div style={{ width: '100%', height: '100%' }} className="bg-white">
@@ -240,7 +200,6 @@ export function GenealogyChart() {
                     nodeColor={(n: any) => {
                         if (n.data.member.gender === 'couple') return '#10B981';
                         if (n.data.member.gender === 'male') return '#3B82F6';
-                        if (n.data.member.gender === 'female') return '#EC4899';
                         return '#9CA3AF';
                     }}
                     nodeBorderRadius={5}
