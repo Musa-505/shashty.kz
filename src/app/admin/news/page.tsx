@@ -2,9 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Edit, Trash2, PlusCircle } from "lucide-react";
+import { Edit, PlusCircle } from "lucide-react";
 import Link from 'next/link';
 import { getAllNewsItems } from "@/lib/firebase-service";
+import { DeleteNewsButton } from "@/components/admin/delete-news-button";
 
 export default async function AdminNewsPage() {
   const newsItems = await getAllNewsItems();
@@ -52,10 +53,7 @@ export default async function AdminNewsPage() {
                             <span className="sr-only">Өңдеу</span>
                         </Button>
                      </Link>
-                     <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Жою</span>
-                    </Button>
+                     <DeleteNewsButton newsId={item.id} />
                   </TableCell>
                 </TableRow>
               ))}

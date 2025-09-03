@@ -93,9 +93,30 @@ const articleFromFirestore = (doc: any): Article => {
     const data = doc.data();
     return {
         id: doc.id,
-        ...data
+        slug: data.slug,
+        title: data.title,
+        summary: data.summary,
+        content: data.content,
+        author: data.author,
+        date: data.date,
+        tags: data.tags || [],
+        imageUrls: data.imageUrls || [],
+        imageHint: data.imageHint || '',
     };
 };
+
+
+export async function createArticle(articleData: Omit<Article, 'id'>) {
+    try {
+        const docRef = await addDoc(collection(db, ARTICLES_COLLECTION), articleData);
+        revalidatePath('/admin/articles');
+        revalidatePath('/articles');
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error("Error creating article: ", error);
+        return { success: false, error: "Failed to create article." };
+    }
+}
 
 export async function getAllArticles(): Promise<Article[]> {
     const articlesCollection = collection(db, ARTICLES_COLLECTION);
@@ -111,15 +132,68 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
     return articleFromFirestore(snapshot.docs[0]);
 }
 
+export async function getArticleById(id: string): Promise<Article | null> {
+    const docRef = doc(db, ARTICLES_COLLECTION, id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? articleFromFirestore(docSnap) : null;
+}
+
+export async function updateArticle(id: string, articleData: Partial<Article>) {
+    try {
+        const articleRef = doc(db, ARTICLES_COLLECTION, id);
+        await updateDoc(articleRef, articleData);
+        revalidatePath('/admin/articles');
+        revalidatePath(`/admin/articles/${id}/edit`);
+        revalidatePath('/articles');
+        revalidatePath(`/articles/${articleData.slug}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating article: ", error);
+        return { success: false, error: "Failed to update article." };
+    }
+}
+
+export async function deleteArticle(id: string) {
+    try {
+        await deleteDoc(doc(db, ARTICLES_COLLECTION, id));
+        revalidatePath('/admin/articles');
+        revalidatePath('/articles');
+        return { success: true };
+    } catch (error) {
+        console.error("Error deleting article: ", error);
+        return { success: false, error: "Failed to delete article." };
+    }
+}
+
+
 // =========== News Functions ===========
 
 const newsFromFirestore = (doc: any): News => {
     const data = doc.data();
     return {
         id: doc.id,
-        ...data
+        slug: data.slug,
+        title: data.title,
+        summary: data.summary,
+        content: data.content,
+        date: data.date,
+        category: data.category,
+        imageUrls: data.imageUrls || [],
+        imageHint: data.imageHint || '',
     };
 };
+
+export async function createNewsItem(newsData: Omit<News, 'id'>) {
+    try {
+        const docRef = await addDoc(collection(db, NEWS_COLLECTION), newsData);
+        revalidatePath('/admin/news');
+        revalidatePath('/news');
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error("Error creating news item: ", error);
+        return { success: false, error: "Failed to create news item." };
+    }
+}
 
 export async function getAllNewsItems(): Promise<News[]> {
     const newsCollection = collection(db, NEWS_COLLECTION);
@@ -133,6 +207,40 @@ export async function getNewsItemBySlug(slug: string): Promise<News | null> {
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
     return newsFromFirestore(snapshot.docs[0]);
+}
+
+
+export async function getNewsItemById(id: string): Promise<News | null> {
+    const docRef = doc(db, NEWS_COLLECTION, id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? newsFromFirestore(docSnap) : null;
+}
+
+export async function updateNewsItem(id: string, newsData: Partial<News>) {
+    try {
+        const newsRef = doc(db, NEWS_COLLECTION, id);
+        await updateDoc(newsRef, newsData);
+        revalidatePath('/admin/news');
+        revalidatePath(`/admin/news/${id}/edit`);
+        revalidatePath('/news');
+        revalidatePath(`/news/${newsData.slug}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating news item: ", error);
+        return { success: false, error: "Failed to update news item." };
+    }
+}
+
+export async function deleteNewsItem(id: string) {
+    try {
+        await deleteDoc(doc(db, NEWS_COLLECTION, id));
+        revalidatePath('/admin/news');
+        revalidatePath('/news');
+        return { success: true };
+    } catch (error) {
+        console.error("Error deleting news item: ", error);
+        return { success: false, error: "Failed to delete news item." };
+    }
 }
 
 // =========== Submission Functions ===========
