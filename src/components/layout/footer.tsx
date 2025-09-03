@@ -15,9 +15,6 @@ export function Footer() {
              <p>
                 © {new Date().getFullYear()} Shashty.kz. Сайт "ТорыШашты ата" қоғамдық қорының қолдауымен жасалған.
              </p>
-             <Link href="/admin" className="text-xs hover:underline">
-                Admin Panel
-              </Link>
           </div>
         </div>
       </div>
