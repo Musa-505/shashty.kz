@@ -91,7 +91,7 @@ export function GenealogyChart() {
             return finalEdges;
         });
 
-    }, [setNodes, setEdges, onExpand]);
+    }, [setNodes, setEdges]);
     
     // Set the initial node with the correct onExpand function
     useEffect(() => {
