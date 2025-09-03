@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ReactFlow, {
   Controls,
   Background,
@@ -47,9 +47,9 @@ export function GenealogyChart() {
         const childNodeIds = new Set(personToExpand.children.map(c => c.id));
         const existingChildNodes = nodes.filter(n => childNodeIds.has(n.id));
 
-        // If all children are already on the chart, do nothing.
-        if (existingChildNodes.length === personToExpand.children.length) {
-            return;
+        // If children are already present, do nothing to prevent re-adding.
+        if (existingChildNodes.length > 0) {
+           return;
         }
 
         const parentNode = nodes.find(n => n.id === personToExpand.id);
@@ -57,7 +57,7 @@ export function GenealogyChart() {
 
         const newNodes: Node[] = [];
         personToExpand.children.forEach((child, index) => {
-            // Check if node already exists
+            // This check is redundant due to the check above but kept for safety.
             if (nodes.find(n => n.id === child.id)) return;
 
             const xOffset = (index - (personToExpand.children.length - 1) / 2) * 250;
@@ -70,7 +70,7 @@ export function GenealogyChart() {
                     x: parentNode.position.x + xOffset,
                     y: parentNode.position.y + yOffset
                 },
-                data: { person: child, onExpand },
+                data: { person: child, onExpand: () => {} }, // Placeholder onExpand
                 sourcePosition: Position.Bottom,
                 targetPosition: Position.Top,
                 draggable: false,
@@ -89,24 +89,24 @@ export function GenealogyChart() {
 
     }, [nodes, setNodes, setEdges]);
     
-    // Set the initial node with the correct onExpand function
+    // Set the initial node only once.
     useEffect(() => {
-        setNodes([
-            {
-                id: genealogyData.id,
-                type: 'person',
-                position: { x: 0, y: 0 },
-                data: { person: genealogyData, onExpand },
-                sourcePosition: Position.Bottom,
-                targetPosition: Position.Top,
-                draggable: false,
-            },
-        ]);
+        const initialNode = {
+            id: genealogyData.id,
+            type: 'person',
+            position: { x: 0, y: 0 },
+            data: { person: genealogyData, onExpand: () => {} }, // Use a placeholder for now
+            sourcePosition: Position.Bottom,
+            targetPosition: Position.Top,
+            draggable: false,
+        };
+        setNodes([initialNode]);
         setEdges([]);
-    }, [setNodes, setEdges]); // onExpand removed to break dependency cycle
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setNodes, setEdges]);
 
-    // This effect is needed because onExpand is not stable in the first render.
-    // It updates the onExpand function in the node data once it's stable.
+    // This effect updates the onExpand function in the node data whenever it changes.
+    // This breaks the infinite loop.
     useEffect(() => {
         setNodes((nds) =>
           nds.map((node) => {
