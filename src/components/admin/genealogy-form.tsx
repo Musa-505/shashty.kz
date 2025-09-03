@@ -42,7 +42,8 @@ export function GenealogyForm({ member, allMembers }: GenealogyFormProps) {
     const onSubmit = async (data: GenealogyFormValues) => {
         const memberData = {
           name: data.name,
-          parentId: data.parentId || null,
+          // Handle the special 'root' value
+          parentId: data.parentId === 'root' ? null : data.parentId,
         };
 
         let result;
@@ -95,14 +96,15 @@ export function GenealogyForm({ member, allMembers }: GenealogyFormProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Ата-тегі (әкесі)</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                      {/* Use 'root' as the value for the placeholder/null option */}
+                      <Select onValueChange={field.onChange} defaultValue={field.value || "root"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Түпкі ата ретінде сақтау үшін бос қалдырыңыз" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Түпкі ата (әкесі жоқ)</SelectItem>
+                          <SelectItem value="root">Түпкі ата (әкесі жоқ)</SelectItem>
                           {allMembers.map(parent => (
                               <SelectItem key={parent.id} value={parent.id}>{parent.name}</SelectItem>
                           ))}
