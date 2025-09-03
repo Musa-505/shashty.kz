@@ -41,19 +41,21 @@ export function GenealogyChart() {
 
     const onExpand = useCallback((personToExpand: Person) => {
         setNodes((currentNodes) => {
-            const childNodeIds = new Set((personToExpand.children || []).map(c => c.id));
-            const existingChildNodes = currentNodes.filter(n => childNodeIds.has(n.id));
-
-            if (!personToExpand.children || personToExpand.children.length === 0 || existingChildNodes.length > 0) {
-                return currentNodes; // No children or children already exist, do nothing.
+            const parentNode = currentNodes.find(n => n.id === personToExpand.id);
+            if (!parentNode || !personToExpand.children || personToExpand.children.length === 0) {
+                return currentNodes;
             }
 
-            const parentNode = currentNodes.find(n => n.id === personToExpand.id);
-            if (!parentNode) return currentNodes;
+            const existingChildIds = new Set(currentNodes.map(n => n.id));
+            const childrenToCreate = personToExpand.children.filter(c => !existingChildIds.has(c.id));
 
-            const newNodes: Node[] = personToExpand.children.map((child, index) => {
-                const xOffset = (index - (personToExpand.children.length - 1) / 2) * 250;
-                const yOffset = 150;
+            if (childrenToCreate.length === 0) {
+                return currentNodes; // All children already exist
+            }
+
+            const newNodes: Node[] = childrenToCreate.map((child, index) => {
+                 const xOffset = (index - (personToExpand.children.length - 1) / 2) * 250;
+                 const yOffset = 150;
                 
                 return {
                     id: child.id,
@@ -67,8 +69,8 @@ export function GenealogyChart() {
                     targetPosition: Position.Top,
                 };
             });
-
-            const newEdges = (personToExpand.children ?? []).map(child => ({
+            
+            const newEdges = childrenToCreate.map(child => ({
                 id: `e-${personToExpand.id}-${child.id}`,
                 source: personToExpand.id,
                 target: child.id,
@@ -92,26 +94,7 @@ export function GenealogyChart() {
         };
         setNodes([initialNode]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Empty dependency array ensures this runs only once.
-
-     // This effect updates the onExpand function in the node data whenever it changes.
-    useEffect(() => {
-        setNodes((nds) =>
-          nds.map((node) => {
-            if(node.data.onExpand !== onExpand) {
-                return {
-                    ...node,
-                    data: {
-                        ...node.data,
-                        onExpand,
-                    },
-                };
-            }
-            return node;
-          })
-        );
-    }, [onExpand, setNodes]);
-
+    }, [onExpand]); // Rerunning on onExpand change is intended here to pass the latest onExpand function to the node
 
     return (
         <ReactFlow
