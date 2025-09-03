@@ -44,54 +44,50 @@ export function GenealogyChart() {
             return;
         }
 
-        setNodes((currentNodes) => {
-            const existingNodeIds = new Set(currentNodes.map(n => n.id));
-            const parentNode = currentNodes.find(n => n.id === personToExpand.id);
-            if (!parentNode) return currentNodes;
+        const childNodeIds = new Set(personToExpand.children.map(c => c.id));
+        const existingChildNodes = nodes.filter(n => childNodeIds.has(n.id));
+
+        // If all children are already on the chart, do nothing.
+        if (existingChildNodes.length === personToExpand.children.length) {
+            return;
+        }
+
+        const parentNode = nodes.find(n => n.id === personToExpand.id);
+        if (!parentNode) return;
+
+        const newNodes: Node[] = [];
+        personToExpand.children.forEach((child, index) => {
+            // Check if node already exists
+            if (nodes.find(n => n.id === child.id)) return;
+
+            const xOffset = (index - (personToExpand.children.length - 1) / 2) * 250;
+            const yOffset = 150;
             
-            const newNodes: Node[] = [];
-
-            personToExpand.children?.forEach((child, index) => {
-                 if (!existingNodeIds.has(child.id)) {
-                    const xOffset = (index - ((personToExpand.children?.length ?? 1) - 1) / 2) * 250;
-                    const yOffset = 150;
-                    
-                    newNodes.push({
-                        id: child.id,
-                        type: 'person',
-                        position: {
-                            x: (parentNode.position.x ?? 0) + xOffset,
-                            y: (parentNode.position.y ?? 0) + yOffset
-                        },
-                        data: { person: child, onExpand },
-                        sourcePosition: Position.Bottom,
-                        targetPosition: Position.Top,
-                        draggable: false,
-                    });
-                 }
+            newNodes.push({
+                id: child.id,
+                type: 'person',
+                position: {
+                    x: parentNode.position.x + xOffset,
+                    y: parentNode.position.y + yOffset
+                },
+                data: { person: child, onExpand },
+                sourcePosition: Position.Bottom,
+                targetPosition: Position.Top,
+                draggable: false,
             });
-
-            if (newNodes.length === 0) return currentNodes;
-
-            return [...currentNodes, ...newNodes];
         });
 
-        setEdges((currentEdges) => {
-            const newEdges = (personToExpand.children ?? []).map(child => ({
-                id: `e-${personToExpand.id}-${child.id}`,
-                source: personToExpand.id,
-                target: child.id,
-                markerEnd: { type: MarkerType.ArrowClosed },
-            }));
-            
-            let finalEdges = currentEdges;
-            newEdges.forEach(edge => {
-                finalEdges = addEdge(edge, finalEdges);
-            });
-            return finalEdges;
-        });
+        const newEdges = (personToExpand.children ?? []).map(child => ({
+            id: `e-${personToExpand.id}-${child.id}`,
+            source: personToExpand.id,
+            target: child.id,
+            markerEnd: { type: MarkerType.ArrowClosed },
+        }));
 
-    }, [setNodes, setEdges]);
+        setNodes(nds => nds.concat(newNodes));
+        setEdges(eds => addEdge(newEdges, eds));
+
+    }, [nodes, setNodes, setEdges]);
     
     // Set the initial node with the correct onExpand function
     useEffect(() => {
@@ -107,7 +103,26 @@ export function GenealogyChart() {
             },
         ]);
         setEdges([]);
-    }, [onExpand, setNodes, setEdges]);
+    }, [setNodes, setEdges]); // onExpand removed to break dependency cycle
+
+    // This effect is needed because onExpand is not stable in the first render.
+    // It updates the onExpand function in the node data once it's stable.
+    useEffect(() => {
+        setNodes((nds) =>
+          nds.map((node) => {
+            if(node.data.onExpand !== onExpand) {
+                return {
+                    ...node,
+                    data: {
+                        ...node.data,
+                        onExpand,
+                    },
+                };
+            }
+            return node;
+          })
+        );
+      }, [onExpand, setNodes]);
 
 
     return (
