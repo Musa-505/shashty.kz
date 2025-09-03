@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { MainLayout } from "@/components/layout/main-layout";
 
 const historySections = [
     {
@@ -42,44 +43,46 @@ const historySections = [
 
 export default function HistoryPage() {
     return (
-        <div className="container mx-auto px-4 py-12 md:px-6">
-            <div className="space-y-4 text-center mb-12">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Қазақ тарихына саяхат</h1>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                    Ежелгі көшпенділерден қазіргі егеменді мемлекетке дейін – Қазақстанды қалыптастырған шешуші сәттерді зерттеңіз.
-                </p>
-            </div>
+        <MainLayout>
+            <div className="container mx-auto px-4 py-12 md:px-6">
+                <div className="space-y-4 text-center mb-12">
+                    <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Қазақ тарихына саяхат</h1>
+                    <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                        Ежелгі көшпенділерден қазіргі егеменді мемлекетке дейін – Қазақстанды қалыптастырған шешуші сәттерді зерттеңіз.
+                    </p>
+                </div>
 
-            <div className="relative pl-6 space-y-12 before:absolute before:top-0 before:left-8 before:h-full before:w-1 before:bg-border before:-translate-x-1/2">
-                {historySections.map((section, index) => (
-                    <div key={index} className="relative flex items-start gap-6">
-                         <div className="flex-shrink-0 w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg -translate-x-1/2 transform -left-1">
-                            {index + 1}
+                <div className="relative pl-6 space-y-12 before:absolute before:top-0 before:left-8 before:h-full before:w-1 before:bg-border before:-translate-x-1/2">
+                    {historySections.map((section, index) => (
+                        <div key={index} className="relative flex items-start gap-6">
+                            <div className="flex-shrink-0 w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg -translate-x-1/2 transform -left-1">
+                                {index + 1}
+                            </div>
+                            <Card className="w-full">
+                                <CardContent className="p-0">
+                                    <div className="grid md:grid-cols-2">
+                                        <div className="p-6">
+                                            <h3 className="text-sm font-semibold text-accent uppercase tracking-wider">{section.era}</h3>
+                                            <h2 className="text-2xl font-headline font-bold mt-1 mb-3">{section.title}</h2>
+                                            <p className="text-muted-foreground">{section.content}</p>
+                                        </div>
+                                        <div className="relative min-h-[200px] md:min-h-0">
+                                            <Image
+                                                src={section.imageUrl}
+                                                alt={section.title}
+                                                fill
+                                                className="object-cover rounded-r-lg"
+                                                sizes="(max-width: 768px) 100vw, 50vw"
+                                                data-ai-hint={section.imageHint}
+                                            />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                        <Card className="w-full">
-                            <CardContent className="p-0">
-                                <div className="grid md:grid-cols-2">
-                                    <div className="p-6">
-                                        <h3 className="text-sm font-semibold text-accent uppercase tracking-wider">{section.era}</h3>
-                                        <h2 className="text-2xl font-headline font-bold mt-1 mb-3">{section.title}</h2>
-                                        <p className="text-muted-foreground">{section.content}</p>
-                                    </div>
-                                    <div className="relative min-h-[200px] md:min-h-0">
-                                         <Image
-                                            src={section.imageUrl}
-                                            alt={section.title}
-                                            fill
-                                            className="object-cover rounded-r-lg"
-                                            sizes="(max-width: 768px) 100vw, 50vw"
-                                            data-ai-hint={section.imageHint}
-                                        />
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
+        </MainLayout>
     );
 }
