@@ -2,14 +2,15 @@
 'use server';
 
 import { db } from '@/lib/firebase/clientApp';
-import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where } from 'firebase/firestore';
-import type { Person, Submission, Article, News } from './types';
+import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, writeBatch } from 'firebase/firestore';
+import type { Person, Submission, Article, News, GenealogyMember } from './types';
 import { revalidatePath } from 'next/cache';
 
 const PEOPLE_COLLECTION = 'people';
 const ARTICLES_COLLECTION = 'articles';
 const NEWS_COLLECTION = 'news';
 const SUBMISSIONS_COLLECTION = 'submissions';
+const GENEALOGY_COLLECTION = 'genealogy';
 
 
 // =========== Person Functions ===========
@@ -277,4 +278,91 @@ export async function getAllSubmissions(): Promise<Submission[]> {
             createdAt: data.createdAt?.toDate()?.toLocaleString('kk-KZ') || new Date().toLocaleString('kk-KZ'),
         };
     });
+}
+
+// =========== Genealogy Functions ===========
+
+const genealogyMemberFromFirestore = (doc: any): GenealogyMember => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        name: data.name,
+        parentId: data.parentId || null,
+    };
+};
+
+export async function createGenealogyMember(memberData: Omit<GenealogyMember, 'id'>) {
+    try {
+        const docRef = await addDoc(collection(db, GENEALOGY_COLLECTION), memberData);
+        revalidatePath('/admin/genealogy');
+        revalidatePath('/genealogy');
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error("Error creating genealogy member: ", error);
+        return { success: false, error: "Failed to create genealogy member." };
+    }
+}
+
+export async function getAllGenealogyMembers(): Promise<GenealogyMember[]> {
+    const membersCollection = collection(db, GENEALOGY_COLLECTION);
+    const q = query(membersCollection, orderBy("name"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => genealogyMemberFromFirestore(doc));
+}
+
+export async function getGenealogyMemberById(id: string): Promise<GenealogyMember | null> {
+    const docRef = doc(db, GENEALOGY_COLLECTION, id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? genealogyMemberFromFirestore(docSnap) : null;
+}
+
+export async function getRootGenealogyMember(): Promise<GenealogyMember | null> {
+    const q = query(collection(db, GENEALOGY_COLLECTION), where("parentId", "==", null));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    return genealogyMemberFromFirestore(snapshot.docs[0]);
+}
+
+export async function getChildrenForMember(parentId: string): Promise<GenealogyMember[]> {
+    const q = query(collection(db, GENEALOGY_COLLECTION), where("parentId", "==", parentId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => genealogyMemberFromFirestore(doc));
+}
+
+export async function updateGenealogyMember(id: string, memberData: Partial<GenealogyMember>) {
+    try {
+        const memberRef = doc(db, GENEALOGY_COLLECTION, id);
+        await updateDoc(memberRef, memberData);
+        revalidatePath('/admin/genealogy');
+        revalidatePath(`/admin/genealogy/${id}/edit`);
+        revalidatePath('/genealogy');
+        return { success: true };
+    } catch (error) {
+        console.error("Error updating genealogy member: ", error);
+        return { success: false, error: "Failed to update genealogy member." };
+    }
+}
+
+export async function deleteGenealogyMember(id: string): Promise<{ success: boolean; error?: string }> {
+    const batch = writeBatch(db);
+
+    try {
+        const childrenSnapshot = await getDocs(query(collection(db, GENEALOGY_COLLECTION), where('parentId', '==', id)));
+        
+        if (!childrenSnapshot.empty) {
+            return { success: false, error: "Cannot delete a member with children. Please delete the children first." };
+        }
+
+        const memberRef = doc(db, GENEALOGY_COLLECTION, id);
+        batch.delete(memberRef);
+
+        await batch.commit();
+        
+        revalidatePath('/admin/genealogy');
+        revalidatePath('/genealogy');
+        return { success: true };
+    } catch (error) {
+        console.error("Error deleting genealogy member: ", error);
+        return { success: false, error: "Failed to delete genealogy member." };
+    }
 }

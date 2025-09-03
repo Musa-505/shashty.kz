@@ -3,7 +3,7 @@
 
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { Logo } from "@/components/logo";
-import { Home, Users, FileText, Send, LogOut } from "lucide-react";
+import { Home, Users, FileText, Send, LogOut, GitBranch } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ export default function AdminLayout({
     { href: "/admin/people", label: "Тұлғалар", icon: <Users /> },
     { href: "/admin/articles", label: "Мақалалар", icon: <FileText /> },
     { href: "/admin/news", label: "Жаңалықтар", icon: <FileText /> },
+    { href: "/admin/genealogy", label: "Шежіре", icon: <GitBranch /> },
     { href: "/admin/submissions", label: "Ұсыныстар", icon: <Send /> },
   ];
 

@@ -1,181 +1,172 @@
 
 'use client';
 
-import React, { useMemo, useEffect, useCallback, useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import ReactFlow, {
-    Controls,
-    Background,
-    MiniMap,
-    Panel,
-    useNodesState,
-    useEdgesState,
-    addEdge,
-    Handle,
-    Position,
-    NodeProps,
+  addEdge,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+  Node,
+  Edge,
+  Handle,
+  Position,
+  NodeProps,
 } from 'reactflow';
 import dagre from 'dagre';
 import 'reactflow/dist/style.css';
-import type { FamilyMember } from '@/lib/genealogy-data';
-import { familyMembers } from '@/lib/genealogy-data';
+import { GenealogyMember } from '@/lib/types';
+import { GitBranch } from 'lucide-react';
+import { Button } from './ui/button';
 
-// ==================== Custom Node Component ====================
+// ============ Custom Node Component ============
 interface CustomNodeData {
-    label: string;
-    member: FamilyMember;
+  label: string;
+  onExpand: (id: string) => void;
+  isExpanded: boolean;
 }
 
-function CustomNode({ data }: NodeProps<CustomNodeData>) {
-    const { label } = data;
-
-    const nodeClasses = `
-        p-3 rounded-md shadow-md border-2
-        bg-gradient-to-br from-blue-100 to-blue-200 border-blue-400
-        text-center transition-transform transform hover:scale-105 duration-300
-        min-w-[150px] max-w-[220px] flex justify-center items-center
-        text-blue-900 font-semibold cursor-pointer
-    `;
-    
-    return (
-        <div className={nodeClasses} style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-            <Handle type="target" position={Position.Top} className="w-2 h-2 bg-gray-400 rounded-full !-top-1 opacity-50" />
-            <div className="font-headline text-base leading-tight">{label}</div>
-            <Handle type="source" position={Position.Bottom} className="w-2 h-2 bg-gray-400 rounded-full !-bottom-1 opacity-50" />
-        </div>
-    );
-}
-
-// ==================== Layouting Function ====================
-const nodeWidth = 200;
-const nodeHeight = 60;
-
-const getLayoutedElements = (nodes: any[], edges: any[], direction = 'TB') => {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ rankdir: direction, nodesep: 25, ranksep: 50 });
-
-    nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-    });
-
-    edges.forEach((edge) => {
-        dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    nodes.forEach((node) => {
-        const nodeWithPosition = dagreGraph.node(node.id);
-        node.targetPosition = Position.Top;
-        node.sourcePosition = Position.Bottom;
-        node.position = {
-            x: nodeWithPosition.x - nodeWidth / 2,
-            y: nodeWithPosition.y - nodeHeight / 2,
-        };
-        return node;
-    });
-
-    return { nodes, edges };
+const CustomNode = ({ id, data }: NodeProps<CustomNodeData>) => {
+  return (
+    <div className="bg-card border-2 border-primary/50 shadow-lg rounded-lg p-3 text-center transition-all duration-200 hover:shadow-xl hover:border-primary">
+      <Handle type="target" position={Position.Top} className="!bg-primary/50" />
+      <div className="font-headline text-lg text-foreground">{data.label}</div>
+      {!data.isExpanded && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => data.onExpand(id)}
+          className="mt-2 text-primary hover:text-accent-foreground"
+        >
+          <GitBranch className="mr-2 h-4 w-4" />
+          Тарату
+        </Button>
+      )}
+      <Handle type="source" position={Position.Bottom} className="!bg-primary/50" />
+    </div>
+  );
 };
 
-// ==================== Main Genealogy Chart Component ====================
-export function GenealogyChart() {
-    const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-    const [isLaidOut, setIsLaidOut] = useState(false);
+// ============ Layouting Function ============
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-    const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+const nodeWidth = 200;
+const nodeHeight = 100;
 
-    const onNodeClick = useCallback((event: React.MouseEvent, node: any) => {
-        const memberId = node.id;
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB'): {nodes: Node[], edges: Edge[]} => {
+  dagreGraph.setGraph({ rankdir: direction, ranksep: 60, nodesep: 20 });
 
-        setNodes((prevNodes) => {
-            const existingNodeIds = new Set(prevNodes.map(n => n.id));
-            const children = familyMembers.filter(m => m.parents.includes(memberId));
-            
-            const newChildren = children.filter(child => !existingNodeIds.has(child.id));
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
 
-            if (newChildren.length === 0) {
-                return prevNodes; // No new children to add
-            }
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
 
-            const newNodes = newChildren.map(child => ({
-                id: child.id,
-                type: 'customNode',
-                data: { label: child.name, member: child },
-                position: { x: 0, y: 0 }, // Position will be set by layout
-            }));
-            
-            const newEdges = newChildren.map(child => ({
-                id: `e-${memberId}-${child.id}`,
-                source: memberId,
-                target: child.id,
-                style: { strokeWidth: 1.5, stroke: '#A1A1AA' },
-            }));
+  dagre.layout(dagreGraph);
 
-            const allNodes = [...prevNodes, ...newNodes];
-            const allEdges = [...edges, ...newEdges];
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = Position.Top;
+    node.sourcePosition = Position.Bottom;
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    };
+  });
 
-            const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(allNodes, allEdges);
-            
-            setEdges(layoutedEdges);
-            setIsLaidOut(false); // Trigger re-layout
-            return layoutedNodes;
-        });
-    }, [edges, setEdges, setNodes]);
+  return { nodes, edges };
+};
 
-    useEffect(() => {
-        if (!isLaidOut) {
-            const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges);
-            setNodes(layoutedNodes);
-            setEdges(layoutedEdges);
-            setIsLaidOut(true);
-        }
-    }, [nodes, edges, isLaidOut, setNodes, setEdges]);
-    
+// ============ Main Chart Component ============
+interface GenealogyChartProps {
+    initialMember: GenealogyMember;
+    fetchChildren: (parentId: string) => Promise<GenealogyMember[]>;
+}
 
-    useEffect(() => {
-        const rootMember = familyMembers.find(m => m.parents.length === 0);
-        if (rootMember) {
-            const initialNode = {
-                id: rootMember.id,
-                type: 'customNode',
-                data: { label: rootMember.name, member: rootMember },
-                position: { x: 400, y: 50 },
-            };
-            setNodes([initialNode]);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+export function GenealogyChart({ initialMember, fetchChildren }: GenealogyChartProps) {
+  const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
-    return (
-        <div style={{ width: '100%', height: '100%' }} className="bg-white">
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                nodeTypes={nodeTypes}
-                onNodeClick={onNodeClick}
-                fitView
-                nodesDraggable={false}
-                minZoom={0.2}
-                maxZoom={2}
-                className="bg-muted/50"
-            >
-                <MiniMap 
-                    nodeStrokeWidth={3} 
-                    nodeColor={() => '#3b82f6'} // Blue color for all nodes
-                    nodeBorderRadius={5}
-                />
-                <Controls />
-                <Background variant="dots" gap={20} size={1} color="#E5E7EB" />
-                <Panel position="top-left" className="p-2 bg-white rounded-lg shadow-md text-sm text-gray-700 font-headline">
-                    Ата-бабалар шежіресі
-                </Panel>
-            </ReactFlow>
-        </div>
+  const onExpand = useCallback(async (nodeId: string) => {
+    if (expandedNodes.has(nodeId)) return;
+
+    setNodes((prevNodes) => prevNodes.map(n => n.id === nodeId ? {...n, data: {...n.data, isExpanded: true}} : n));
+
+    const children = await fetchChildren(nodeId);
+
+    const newNodes: Node<CustomNodeData>[] = children.map((member) => ({
+      id: member.id,
+      type: 'custom',
+      data: { 
+          label: member.name, 
+          onExpand: onExpand,
+          isExpanded: false
+      },
+      position: { x: 0, y: 0 },
+    }));
+
+    const newEdges: Edge[] = children.map((member) => ({
+      id: `e-${nodeId}-${member.id}`,
+      source: nodeId,
+      target: member.id,
+      animated: true,
+      style: { stroke: '#60a5fa', strokeWidth: 2 },
+    }));
+
+    setNodes((nds) => [...nds, ...newNodes]);
+    setEdges((eds) => [...eds, ...newEdges]);
+    setExpandedNodes((prev) => new Set(prev).add(nodeId));
+
+  }, [fetchChildren, setNodes, setEdges, expandedNodes]);
+
+  const initialNodes: Node<CustomNodeData>[] = useMemo(() => [
+    {
+      id: initialMember.id,
+      type: 'custom',
+      data: { 
+          label: initialMember.name, 
+          onExpand: onExpand,
+          isExpanded: false,
+      },
+      position: { x: 0, y: 0 },
+    },
+  ], [initialMember, onExpand]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const onLayout = useCallback(() => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      nodes,
+      edges
     );
+    setNodes([...layoutedNodes]);
+    setEdges([...layoutedEdges]);
+  }, [nodes, edges, setNodes, setEdges]);
+  
+  React.useEffect(() => {
+    onLayout();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes.length]); // Re-layout when number of nodes changes
+
+  return (
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges])}
+        nodeTypes={nodeTypes}
+        fitView
+        nodesDraggable={false}
+        className="bg-muted/50"
+      >
+        <Controls />
+        <Background />
+      </ReactFlow>
+  );
 }

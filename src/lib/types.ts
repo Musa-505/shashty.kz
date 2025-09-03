@@ -41,3 +41,9 @@ export interface News {
     imageUrls: string[];
     imageHint: string;
 }
+
+export interface GenealogyMember {
+  id: string;
+  name: string;
+  parentId: string | null; // null for the root member
+}
