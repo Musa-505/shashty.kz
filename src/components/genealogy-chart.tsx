@@ -40,73 +40,61 @@ export function GenealogyChart() {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     const onExpand = useCallback((personToExpand: Person) => {
-        if (!personToExpand.children || personToExpand.children.length === 0) {
-            return;
-        }
+        setNodes((currentNodes) => {
+            const childNodeIds = new Set((personToExpand.children || []).map(c => c.id));
+            const existingChildNodes = currentNodes.filter(n => childNodeIds.has(n.id));
 
-        const childNodeIds = new Set(personToExpand.children.map(c => c.id));
-        const existingChildNodes = nodes.filter(n => childNodeIds.has(n.id));
+            if (!personToExpand.children || personToExpand.children.length === 0 || existingChildNodes.length > 0) {
+                return currentNodes; // No children or children already exist, do nothing.
+            }
 
-        // If children are already present, do nothing to prevent re-adding.
-        if (existingChildNodes.length > 0) {
-           return;
-        }
+            const parentNode = currentNodes.find(n => n.id === personToExpand.id);
+            if (!parentNode) return currentNodes;
 
-        const parentNode = nodes.find(n => n.id === personToExpand.id);
-        if (!parentNode) return;
-
-        const newNodes: Node[] = [];
-        personToExpand.children.forEach((child, index) => {
-            // This check is redundant due to the check above but kept for safety.
-            if (nodes.find(n => n.id === child.id)) return;
-
-            const xOffset = (index - (personToExpand.children.length - 1) / 2) * 250;
-            const yOffset = 150;
-            
-            newNodes.push({
-                id: child.id,
-                type: 'person',
-                position: {
-                    x: parentNode.position.x + xOffset,
-                    y: parentNode.position.y + yOffset
-                },
-                data: { person: child, onExpand: () => {} }, // Placeholder onExpand
-                sourcePosition: Position.Bottom,
-                targetPosition: Position.Top,
-                draggable: false,
+            const newNodes: Node[] = personToExpand.children.map((child, index) => {
+                const xOffset = (index - (personToExpand.children.length - 1) / 2) * 250;
+                const yOffset = 150;
+                
+                return {
+                    id: child.id,
+                    type: 'person',
+                    position: {
+                        x: parentNode.position.x + xOffset,
+                        y: parentNode.position.y + yOffset
+                    },
+                    data: { person: child, onExpand: onExpand }, 
+                    sourcePosition: Position.Bottom,
+                    targetPosition: Position.Top,
+                };
             });
+
+            const newEdges = (personToExpand.children ?? []).map(child => ({
+                id: `e-${personToExpand.id}-${child.id}`,
+                source: personToExpand.id,
+                target: child.id,
+                markerEnd: { type: MarkerType.ArrowClosed },
+            }));
+
+            setEdges(eds => addEdge(newEdges, eds));
+            return [...currentNodes, ...newNodes];
         });
-
-        const newEdges = (personToExpand.children ?? []).map(child => ({
-            id: `e-${personToExpand.id}-${child.id}`,
-            source: personToExpand.id,
-            target: child.id,
-            markerEnd: { type: MarkerType.ArrowClosed },
-        }));
-
-        setNodes(nds => nds.concat(newNodes));
-        setEdges(eds => addEdge(newEdges, eds));
-
-    }, [nodes, setNodes, setEdges]);
+    }, [setNodes, setEdges]);
     
-    // Set the initial node only once.
+    // Set the initial node only once on mount.
     useEffect(() => {
-        const initialNode = {
+        const initialNode: Node = {
             id: genealogyData.id,
             type: 'person',
             position: { x: 0, y: 0 },
-            data: { person: genealogyData, onExpand: () => {} }, // Use a placeholder for now
+            data: { person: genealogyData, onExpand: onExpand }, 
             sourcePosition: Position.Bottom,
             targetPosition: Position.Top,
-            draggable: false,
         };
         setNodes([initialNode]);
-        setEdges([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [setNodes, setEdges]);
+    }, []); // Empty dependency array ensures this runs only once.
 
-    // This effect updates the onExpand function in the node data whenever it changes.
-    // This breaks the infinite loop.
+     // This effect updates the onExpand function in the node data whenever it changes.
     useEffect(() => {
         setNodes((nds) =>
           nds.map((node) => {
@@ -122,7 +110,7 @@ export function GenealogyChart() {
             return node;
           })
         );
-      }, [onExpand, setNodes]);
+    }, [onExpand, setNodes]);
 
 
     return (
@@ -143,3 +131,4 @@ export function GenealogyChart() {
         </ReactFlow>
     );
 }
+
