@@ -16,3 +16,28 @@ export interface Submission {
   status: 'new' | 'viewed' | 'archived';
   createdAt: string;
 }
+
+export interface Article {
+    id: string;
+    slug: string;
+    title: string;
+    summary: string;
+    content: string;
+    author: string;
+    date: string; // Consider using a timestamp for better sorting
+    tags: string[];
+    imageUrls: string[];
+    imageHint: string;
+}
+
+export interface News {
+    id: string;
+    slug: string;
+    title: string;
+    summary: string;
+    content: string;
+    date: string; // Consider using a timestamp
+    category: string;
+    imageUrls: string[];
+    imageHint: string;
+}

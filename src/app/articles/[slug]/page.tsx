@@ -1,5 +1,5 @@
 
-import { articles } from "@/lib/placeholder-data";
+import { getArticleBySlug, getAllArticles } from "@/lib/firebase-service";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const article = articles.find(a => a.slug === params.slug);
+  const article = await getArticleBySlug(params.slug);
 
   if (!article) {
     return {
@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = articles.find(a => a.slug === params.slug);
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
+  const article = await getArticleBySlug(params.slug);
 
   if (!article) {
     notFound();
@@ -59,7 +59,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         <Card className="mb-8 overflow-hidden">
             <Carousel className="w-full">
             <CarouselContent>
-                {article.imageUrls.map((url, index) => (
+                {article.imageUrls && article.imageUrls.length > 0 ? article.imageUrls.map((url, index) => (
                 <CarouselItem key={index}>
                     <div className="relative aspect-video w-full">
                     <Image
@@ -72,9 +72,22 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
                     />
                     </div>
                 </CarouselItem>
-                ))}
+                )) : (
+                <CarouselItem>
+                    <div className="relative aspect-video w-full">
+                    <Image
+                        src={'https://picsum.photos/1200/600'}
+                        alt={`${article.title} суреті`}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                        data-ai-hint={article.imageHint || "placeholder image"}
+                    />
+                    </div>
+                </CarouselItem>
+                )}
             </CarouselContent>
-            {article.imageUrls.length > 1 && (
+            {article.imageUrls && article.imageUrls.length > 1 && (
                 <>
                 <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2" />
                 <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2" />
@@ -94,6 +107,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 }
 
 export async function generateStaticParams() {
+  const articles = await getAllArticles();
   return articles.map(article => ({
     slug: article.slug,
   }));

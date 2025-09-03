@@ -1,12 +1,16 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { articles } from "@/lib/placeholder-data";
+import { getAllArticles } from "@/lib/firebase-service";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 
-export default function ArticlesPage() {
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export default async function ArticlesPage() {
+  const articles = await getAllArticles();
+
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="space-y-4 text-center mb-12">
@@ -22,7 +26,7 @@ export default function ArticlesPage() {
             <div className="relative h-56 w-full">
               <Link href={`/articles/${article.slug}`}>
                 <Image
-                  src={article.imageUrls[0]}
+                  src={article.imageUrls?.[0] || 'https://picsum.photos/400/300'}
                   alt={article.title}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"

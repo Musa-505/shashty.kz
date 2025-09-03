@@ -2,16 +2,19 @@
 'use server';
 
 import { db } from '@/lib/firebase/clientApp';
-import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
-import type { Person, Submission } from './types';
+import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where } from 'firebase/firestore';
+import type { Person, Submission, Article, News } from './types';
 import { revalidatePath } from 'next/cache';
 
 const PEOPLE_COLLECTION = 'people';
+const ARTICLES_COLLECTION = 'articles';
+const NEWS_COLLECTION = 'news';
 const SUBMISSIONS_COLLECTION = 'submissions';
 
 
-// Helper function to convert Firestore doc to Person object
-const fromFirestore = (doc: any): Person => {
+// =========== Person Functions ===========
+
+const personFromFirestore = (doc: any): Person => {
     const data = doc.data();
     return {
         id: doc.id,
@@ -22,7 +25,6 @@ const fromFirestore = (doc: any): Person => {
     };
 };
 
-// CREATE a new person
 export async function createPerson(personData: Omit<Person, 'id'>) {
     try {
         const docRef = await addDoc(collection(db, PEOPLE_COLLECTION), personData);
@@ -35,39 +37,28 @@ export async function createPerson(personData: Omit<Person, 'id'>) {
     }
 }
 
-// READ all people
 export async function getAllPeople(): Promise<Person[]> {
     const peopleCollection = collection(db, PEOPLE_COLLECTION);
     const q = query(peopleCollection, orderBy("name"));
     const peopleSnapshot = await getDocs(q);
-    const peopleList = peopleSnapshot.docs.map(doc => fromFirestore(doc));
-    return peopleList;
+    return peopleSnapshot.docs.map(doc => personFromFirestore(doc));
 }
 
-
-// READ a single person by slug
 export async function getPersonBySlug(slug: string): Promise<Person | null> {
-    // Note: This is not efficient for large datasets.
-    // A better approach would be to query by slug directly if they are unique.
-    const people = await getAllPeople();
-    const person = people.find(p => p.slug === slug);
-    return person || null;
+    const q = query(collection(db, PEOPLE_COLLECTION), where("slug", "==", slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+        return null;
+    }
+    return personFromFirestore(querySnapshot.docs[0]);
 }
 
-// READ a single person by ID
 export async function getPersonById(id: string): Promise<Person | null> {
     const docRef = doc(db, PEOPLE_COLLECTION, id);
     const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        return fromFirestore(docSnap);
-    } else {
-        return null;
-    }
+    return docSnap.exists() ? personFromFirestore(docSnap) : null;
 }
 
-
-// UPDATE a person
 export async function updatePerson(id: string, personData: Partial<Person>) {
     try {
         const personRef = doc(db, PEOPLE_COLLECTION, id);
@@ -83,11 +74,9 @@ export async function updatePerson(id: string, personData: Partial<Person>) {
     }
 }
 
-// DELETE a person
 export async function deletePerson(id: string) {
     try {
-        const personRef = doc(db, PEOPLE_COLLECTION, id);
-        await deleteDoc(personRef);
+        await deleteDoc(doc(db, PEOPLE_COLLECTION, id));
         revalidatePath('/admin/people');
         revalidatePath('/people');
         return { success: true };
@@ -97,9 +86,57 @@ export async function deletePerson(id: string) {
     }
 }
 
-// === Submissions ===
 
-// CREATE a new submission
+// =========== Article Functions ===========
+
+const articleFromFirestore = (doc: any): Article => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        ...data
+    };
+};
+
+export async function getAllArticles(): Promise<Article[]> {
+    const articlesCollection = collection(db, ARTICLES_COLLECTION);
+    const q = query(articlesCollection, orderBy("date", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => articleFromFirestore(doc));
+}
+
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
+    const q = query(collection(db, ARTICLES_COLLECTION), where("slug", "==", slug));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    return articleFromFirestore(snapshot.docs[0]);
+}
+
+// =========== News Functions ===========
+
+const newsFromFirestore = (doc: any): News => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        ...data
+    };
+};
+
+export async function getAllNewsItems(): Promise<News[]> {
+    const newsCollection = collection(db, NEWS_COLLECTION);
+    const q = query(newsCollection, orderBy("date", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => newsFromFirestore(doc));
+}
+
+export async function getNewsItemBySlug(slug: string): Promise<News | null> {
+    const q = query(collection(db, NEWS_COLLECTION), where("slug", "==", slug));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    return newsFromFirestore(snapshot.docs[0]);
+}
+
+// =========== Submission Functions ===========
+
 export async function createSubmission(submissionData: Omit<Submission, 'id' | 'createdAt' | 'status'>) {
     try {
         await addDoc(collection(db, SUBMISSIONS_COLLECTION), {
@@ -115,7 +152,6 @@ export async function createSubmission(submissionData: Omit<Submission, 'id' | '
     }
 }
 
-// READ all submissions
 export async function getAllSubmissions(): Promise<Submission[]> {
     const submissionsCollection = collection(db, SUBMISSIONS_COLLECTION);
     const q = query(submissionsCollection, orderBy("createdAt", "desc"));

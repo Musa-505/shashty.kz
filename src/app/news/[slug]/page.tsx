@@ -1,5 +1,5 @@
 
-import { newsItems } from "@/lib/placeholder-data";
+import { getNewsItemBySlug, getAllNewsItems } from "@/lib/firebase-service";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const item = newsItems.find(n => n.slug === params.slug);
+  const item = await getNewsItemBySlug(params.slug);
 
   if (!item) {
     return {
@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function NewsItemPage({ params }: { params: { slug: string } }) {
-  const item = newsItems.find(n => n.slug === params.slug);
+export default async function NewsItemPage({ params }: { params: { slug: string } }) {
+  const item = await getNewsItemBySlug(params.slug);
 
   if (!item) {
     notFound();
@@ -51,7 +51,7 @@ export default function NewsItemPage({ params }: { params: { slug: string } }) {
         <Card className="mb-8 overflow-hidden">
             <Carousel className="w-full">
             <CarouselContent>
-                {item.imageUrls.map((url, index) => (
+                {item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls.map((url, index) => (
                 <CarouselItem key={index}>
                     <div className="relative aspect-video w-full">
                     <Image
@@ -64,9 +64,22 @@ export default function NewsItemPage({ params }: { params: { slug: string } }) {
                     />
                     </div>
                 </CarouselItem>
-                ))}
+                )) : (
+                <CarouselItem>
+                    <div className="relative aspect-video w-full">
+                    <Image
+                        src={'https://picsum.photos/1200/600'}
+                        alt={`${item.title} суреті`}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                        data-ai-hint={item.imageHint || "placeholder image"}
+                    />
+                    </div>
+                </CarouselItem>
+                )}
             </CarouselContent>
-            {item.imageUrls.length > 1 && (
+            {item.imageUrls && item.imageUrls.length > 1 && (
                 <>
                 <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2" />
                 <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2" />
@@ -86,6 +99,7 @@ export default function NewsItemPage({ params }: { params: { slug: string } }) {
 }
 
 export async function generateStaticParams() {
+  const newsItems = await getAllNewsItems();
   return newsItems.map(item => ({
     slug: item.slug,
   }));

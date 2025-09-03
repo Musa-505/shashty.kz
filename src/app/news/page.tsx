@@ -1,11 +1,15 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { newsItems } from "@/lib/placeholder-data";
+import { getAllNewsItems } from "@/lib/firebase-service";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
-export default function NewsPage() {
+export const revalidate = 60;
+
+export default async function NewsPage() {
+  const newsItems = await getAllNewsItems();
+
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="space-y-4 text-center mb-12">
@@ -21,7 +25,7 @@ export default function NewsPage() {
              <Link href={`/news/${item.slug}`} className="grid md:grid-cols-3 group">
                 <div className="md:col-span-1 relative h-64 md:h-full min-h-[200px]">
                     <Image
-                    src={item.imageUrls[0]}
+                    src={item.imageUrls?.[0] || 'https://picsum.photos/400/300'}
                     alt={item.title}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
