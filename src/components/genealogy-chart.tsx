@@ -43,6 +43,7 @@ const initialNodes: Node[] = [
     data: { person: genealogyData, onExpand: () => {} },
     sourcePosition: Position.Bottom,
     targetPosition: Position.Top,
+    draggable: false, // Make nodes non-draggable
   },
 ];
 
@@ -56,11 +57,22 @@ export function GenealogyChart() {
    const onExpand = useCallback((personToExpand: Person) => {
     setNodes((currentNodes) => {
         const existingNodeIds = new Set(currentNodes.map(n => n.id));
+        
+        // Return current nodes if there are no children to expand
+        if (!personToExpand.children || personToExpand.children.length === 0) {
+            return currentNodes;
+        }
+
+        // Check if children are already added to avoid duplication
+        const areChildrenPresent = personToExpand.children.every(child => existingNodeIds.has(child.id));
+        if (areChildrenPresent) {
+            return currentNodes;
+        }
+
         const childNodes = (personToExpand.children ?? [])
-            .filter(child => !existingNodeIds.has(child.id))
             .map((child, index) => {
                 const parentNode = currentNodes.find(n => n.id === personToExpand.id);
-                const xOffset = (index - ((personToExpand.children?.length ?? 1) -1) / 2) * 250;
+                const xOffset = (index - ((personToExpand.children?.length ?? 1) - 1) / 2) * 250;
                 const yOffset = 150;
 
                 return {
@@ -73,6 +85,7 @@ export function GenealogyChart() {
                     data: { person: child, onExpand: onExpand },
                     sourcePosition: Position.Bottom,
                     targetPosition: Position.Top,
+                    draggable: false, // Make new nodes non-draggable
                 };
             });
 
@@ -87,9 +100,8 @@ export function GenealogyChart() {
             markerEnd: { type: MarkerType.ArrowClosed },
         }));
         
-        let updatedEdges = currentEdges;
+        let updatedEdges = [...currentEdges];
         newEdges.forEach(edge => {
-            // addEdge is idempotent, it won't add duplicates
             updatedEdges = addEdge(edge, updatedEdges);
         });
         
@@ -118,6 +130,9 @@ export function GenealogyChart() {
       nodeTypes={nodeTypes}
       fitView
       className="bg-background"
+      nodesDraggable={false} // Globally disable node dragging
+      nodesConnectable={false} // Disable connecting nodes via drag
+      elementsSelectable={false} // Disable selecting elements
     >
       <Controls />
       <Background />
