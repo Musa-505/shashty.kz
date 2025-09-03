@@ -2,58 +2,56 @@
 export interface Person {
   id: string;
   name: string;
-  title: string;
-  imageUrl: string;
   children?: Person[];
 }
 
 export const genealogyData: Person = {
-  id: "janybek-khan",
-  name: "Жәнібек хан",
-  title: "Қазақ хандығының негізін қалаушы",
-  imageUrl: "https://picsum.photos/150/150?random=10",
+  id: "alash",
+  name: "Алаш",
   children: [
     {
-      id: "kasym-khan",
-      name: "Қасым хан",
-      title: "Жәнібектің ұлы",
-      imageUrl: "https://picsum.photos/150/150?random=11",
+      id: "orta-juz",
+      name: "Орта жүз",
       children: [
+        { id: "oshakty", name: "Ошақты" },
+        { id: "alban", name: "Албан" },
+        { id: "suan", name: "Суан" },
+        { id: "dulat", name: "Дулат" },
+      ],
+    },
+    {
+      id: "kishi-juz",
+      name: "Кіші жүз",
+      children: [
+        { id: "kayirbay-karakosek", name: "Қайырбай-Қаракөсек" },
         {
-          id: "khaknazar-khan",
-          name: "Хақназар хан",
-          title: "Қасымның ұлы",
-          imageUrl: "https://picsum.photos/150/150?random=12",
+          id: "bayuly",
+          name: "Байұлы",
           children: [
-            {
-              id: "shyghay-khan",
-              name: "Шығай хан",
-              title: "Хақназардың ұлы",
-              imageUrl: "https://picsum.photos/150/150?random=13",
-            },
+            { id: "sherkesh", name: "Шеркеш" },
+            { id: "ysyk", name: "Ысық" },
+            { id: "maskar", name: "Масқар" },
+            { id: "baybakty", name: "Байбақты" },
+            { id: "alasha", name: "Алаша" },
+            { id: "kyzylkurt", name: "Қызылқұрт" },
+            { id: "tana", name: "Тана" },
+            { id: "berish", name: "Беріш" },
+            { id: "esentemir", name: "Есентемір" },
+            { id: "taz", name: "Таз" },
+            { id: "jappas", name: "Жаппас" },
+            { id: "altyn", name: "Алтын" },
+            { id: "aday", name: "Адай" },
           ],
         },
         {
-          id: "mamash-khan",
-          name: "Мамаш хан",
-          title: "Қасымның ұлы",
-          imageUrl: "https://picsum.photos/150/150?random=14",
+          id: "jetiru",
+          name: "Жетіру",
         },
       ],
     },
     {
-      id: "adik-sultan",
-      name: "Әдік сұлтан",
-      title: "Жәнібектің ұлы",
-      imageUrl: "https://picsum.photos/150/150?random=15",
-       children: [
-        {
-          id: "tahyr-khan",
-          name: "Тахир хан",
-          title: "Әдіктің ұлы",
-          imageUrl: "https://picsum.photos/150/150?random=16",
-        },
-      ],
+      id: "juzden-tys",
+      name: "Жүзден тыс",
     },
   ],
 };

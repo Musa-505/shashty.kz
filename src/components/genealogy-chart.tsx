@@ -16,26 +16,18 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { genealogyData, Person } from '@/lib/genealogy-data';
-import Image from 'next/image';
 import { Card } from './ui/card';
+import { Home } from 'lucide-react';
 
 const PersonNode = ({ data }: { data: { person: Person, onExpand: (person: Person) => void } }) => (
   <Card 
-    className="w-48 text-center shadow-md bg-card border-2 border-primary cursor-pointer hover:border-accent p-2"
+    className="w-48 text-center shadow-md bg-green-100 border-2 border-green-300 cursor-pointer hover:border-green-500 p-2"
     onClick={() => data.onExpand(data.person)}
   >
-    <div className="relative w-full h-32 mb-2 rounded-md overflow-hidden">
-        <Image
-            src={data.person.imageUrl}
-            alt={data.person.name}
-            fill
-            className="object-cover"
-            sizes="150px"
-            data-ai-hint="historical portrait"
-        />
+    <div className="flex items-center justify-center gap-2">
+      <Home className="h-6 w-6 text-green-800" />
+      <h3 className="text-base font-bold font-headline text-green-900">{data.person.name}</h3>
     </div>
-    <h3 className="text-base font-bold font-headline">{data.person.name}</h3>
-    <p className="text-xs text-muted-foreground">{data.person.title}</p>
   </Card>
 );
 
@@ -69,7 +61,7 @@ export function GenealogyChart() {
             .map((child, index) => {
                 const parentNode = currentNodes.find(n => n.id === personToExpand.id);
                 const xOffset = (index - ((personToExpand.children?.length ?? 1) -1) / 2) * 250;
-                const yOffset = 250;
+                const yOffset = 150;
 
                 return {
                     id: child.id,
