@@ -9,8 +9,8 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,24 +24,41 @@ import {
 } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { createSubmission } from '@/lib/firebase-service';
 
 export function ShareFab() {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitting(true);
     const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData.entries());
     
-    // In a real application, this would send data to a backend for admin review.
-    console.log('User submission:', data);
+    const submissionData = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      type: formData.get('type') as 'person' | 'news' | 'article' | 'other',
+      content: formData.get('content') as string,
+    };
+    
+    const result = await createSubmission(submissionData);
 
-    toast({
-      title: 'Рахмет!',
-      description: 'Ақпаратыңыз модераторларға жіберілді. Тексерістен кейін сайтқа жарияланады.',
-    });
-    setOpen(false);
+    if (result.success) {
+        toast({
+            title: 'Рахмет!',
+            description: 'Ақпаратыңыз модераторларға жіберілді. Тексерістен кейін сайтқа жарияланады.',
+        });
+        setOpen(false);
+    } else {
+        toast({
+            title: 'Қате',
+            description: 'Ақпаратты жіберу кезінде қате пайда болды. Кейінірек қайталап көріңіз.',
+            variant: 'destructive',
+        });
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -104,7 +121,9 @@ export function ShareFab() {
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Жіберу</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Жіберілуде...' : 'Жіберу'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

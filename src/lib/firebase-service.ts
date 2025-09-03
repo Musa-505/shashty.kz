@@ -2,11 +2,13 @@
 'use server';
 
 import { db } from '@/lib/firebase/clientApp';
-import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
-import type { Person } from './types';
+import { collection, getDocs, getDoc, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import type { Person, Submission } from './types';
 import { revalidatePath } from 'next/cache';
 
 const PEOPLE_COLLECTION = 'people';
+const SUBMISSIONS_COLLECTION = 'submissions';
+
 
 // Helper function to convert Firestore doc to Person object
 const fromFirestore = (doc: any): Person => {
@@ -93,4 +95,42 @@ export async function deletePerson(id: string) {
         console.error("Error deleting person: ", error);
         return { success: false, error: "Failed to delete person." };
     }
+}
+
+// === Submissions ===
+
+// CREATE a new submission
+export async function createSubmission(submissionData: Omit<Submission, 'id' | 'createdAt' | 'status'>) {
+    try {
+        await addDoc(collection(db, SUBMISSIONS_COLLECTION), {
+            ...submissionData,
+            status: 'new',
+            createdAt: serverTimestamp(),
+        });
+        revalidatePath('/admin/submissions');
+        return { success: true };
+    } catch (error) {
+        console.error("Error creating submission: ", error);
+        return { success: false, error: "Failed to create submission." };
+    }
+}
+
+// READ all submissions
+export async function getAllSubmissions(): Promise<Submission[]> {
+    const submissionsCollection = collection(db, SUBMISSIONS_COLLECTION);
+    const q = query(submissionsCollection, orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            name: data.name,
+            email: data.email,
+            type: data.type,
+            content: data.content,
+            status: data.status,
+            createdAt: data.createdAt?.toDate()?.toLocaleString('kk-KZ') || new Date().toLocaleString('kk-KZ'),
+        };
+    });
 }

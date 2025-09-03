@@ -6,3 +6,13 @@ export interface Person {
   biography: string;
   imageUrls: string[];
 }
+
+export interface Submission {
+  id: string;
+  name: string;
+  email: string;
+  type: 'person' | 'news' | 'article' | 'other';
+  content: string;
+  status: 'new' | 'viewed' | 'archived';
+  createdAt: string;
+}
