@@ -40,37 +40,40 @@ export function GenealogyChart() {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
     const onExpand = useCallback((personToExpand: Person) => {
+        if (!personToExpand.children || personToExpand.children.length === 0) {
+            return;
+        }
+
         setNodes((currentNodes) => {
             const existingNodeIds = new Set(currentNodes.map(n => n.id));
-            if (!personToExpand.children || personToExpand.children.length === 0) {
-                return currentNodes;
-            }
-
-            const childrenArePresent = personToExpand.children.every(child => existingNodeIds.has(child.id));
-            if (childrenArePresent) {
-                return currentNodes;
-            }
-
             const parentNode = currentNodes.find(n => n.id === personToExpand.id);
-            const childNodes = (personToExpand.children ?? []).map((child, index) => {
-                const xOffset = (index - ((personToExpand.children?.length ?? 1) - 1) / 2) * 250;
-                const yOffset = 150;
+            if (!parentNode) return currentNodes;
+            
+            const newNodes: Node[] = [];
 
-                return {
-                    id: child.id,
-                    type: 'person',
-                    position: {
-                        x: (parentNode?.position.x ?? 0) + xOffset,
-                        y: (parentNode?.position.y ?? 0) + yOffset
-                    },
-                    data: { person: child, onExpand },
-                    sourcePosition: Position.Bottom,
-                    targetPosition: Position.Top,
-                    draggable: false,
-                };
+            personToExpand.children?.forEach((child, index) => {
+                 if (!existingNodeIds.has(child.id)) {
+                    const xOffset = (index - ((personToExpand.children?.length ?? 1) - 1) / 2) * 250;
+                    const yOffset = 150;
+                    
+                    newNodes.push({
+                        id: child.id,
+                        type: 'person',
+                        position: {
+                            x: (parentNode.position.x ?? 0) + xOffset,
+                            y: (parentNode.position.y ?? 0) + yOffset
+                        },
+                        data: { person: child, onExpand },
+                        sourcePosition: Position.Bottom,
+                        targetPosition: Position.Top,
+                        draggable: false,
+                    });
+                 }
             });
 
-            return [...currentNodes, ...childNodes];
+            if (newNodes.length === 0) return currentNodes;
+
+            return [...currentNodes, ...newNodes];
         });
 
         setEdges((currentEdges) => {
@@ -81,7 +84,6 @@ export function GenealogyChart() {
                 markerEnd: { type: MarkerType.ArrowClosed },
             }));
             
-            // Using React Flow's addEdge utility to prevent duplicates
             let finalEdges = currentEdges;
             newEdges.forEach(edge => {
                 finalEdges = addEdge(edge, finalEdges);
@@ -89,7 +91,7 @@ export function GenealogyChart() {
             return finalEdges;
         });
 
-    }, [setNodes, setEdges]);
+    }, [setNodes, setEdges, onExpand]);
     
     // Set the initial node with the correct onExpand function
     useEffect(() => {
