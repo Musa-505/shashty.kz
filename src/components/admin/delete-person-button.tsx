@@ -16,9 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { deletePerson } from "@/lib/firebase-service";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export function DeletePersonButton({ personId }: { personId: string }) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleDelete = async () => {
     const result = await deletePerson(personId);
@@ -27,6 +29,7 @@ export function DeletePersonButton({ personId }: { personId: string }) {
         title: "Сәтті жойылды",
         description: "Тұлға туралы ақпарат жойылды.",
       });
+      router.refresh();
     } else {
       toast({
         title: "Қате",
